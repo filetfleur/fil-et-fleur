@@ -324,9 +324,10 @@
         let triBiblio = { cle: 'nom', sens: 1 };
         let isAdmin = false;
         
-        const MON_INSTAGRAM = "https://instagram.com/ton_compte";
-        const MON_TIKTOK = "https://www.tiktok.com/@fil_et_fleur?_r=1&_t=ZN-95hZQQ1xyLO";
-        const MON_FACEBOOK = "https://facebook.com/ton_compte";
+        // ⚠️ TES RÉSEAUX SOCIAUX ICI ⚠️
+        const MON_INSTAGRAM = "https://www.instagram.com/fil_et.fleur";
+        const MON_TIKTOK = "https://www.tiktok.com/@fil_et_fleur";
+        const MON_FACEBOOK = "https://www.facebook.com/laurent.outan.3762/";
 
         window.addEventListener('firebaseReady', () => {
             const { auth, onAuthStateChanged } = window.FB;
@@ -429,7 +430,6 @@
             const messageVide = document.getElementById('messageVide');
             const liste = getCreationsFiltrees();
             
-            // TRI PRINCIPAL : On trie d'abord par l'ordre personnalisé
             liste.sort((a, b) => a.ordre - b.ordre);
             
             galerie.innerHTML = '';
@@ -492,8 +492,6 @@
         function afficherBiblio() {
             if (!isAdmin) return;
             const tbody = document.getElementById('biblioBody');
-            
-            // Tri par ordre croissant pour correspondre à la galerie
             const liste = getCreationsFiltrees().sort((a, b) => a.ordre - b.ordre);
             
             tbody.innerHTML = '';
@@ -505,7 +503,6 @@
                 const date = c.dateVente ? formaterDate(c.dateVente) : '—';
                 const likes = c.likes ? `❤️ ${c.likes}` : '—';
                 
-                // Flèches de tri (on empêche de monter le premier et de descendre le dernier)
                 const btnHaut = index > 0 ? `<button onclick="changerOrdre('${c.id}', ${c.ordre}, 'up')" title="Monter">⬆️</button>` : `<button style="opacity:0.3; cursor:default;" disabled>⬆️</button>`;
                 const btnBas = index < liste.length - 1 ? `<button onclick="changerOrdre('${c.id}', ${c.ordre}, 'down')" title="Descendre">⬇️</button>` : `<button style="opacity:0.3; cursor:default;" disabled>⬇️</button>`;
 
@@ -529,12 +526,10 @@
             });
         }
 
-        // Fonction pour échanger l'ordre de 2 éléments
         async function changerOrdre(id, ordreActuel, direction) {
             const index = creations.findIndex(c => c.id === id);
             if (index === -1) return;
             
-            // On trie d'abord la liste globale par ordre
             const listeTriee = [...creations].sort((a, b) => a.ordre - b.ordre);
             const indexTri = listeTriee.findIndex(c => c.id === id);
             
@@ -545,19 +540,16 @@
 
             const cible = listeTriee[cibleIndex];
             
-            // On échange leurs numéros d'ordre
             const ordreTemp = cible.ordre;
             cible.ordre = ordreActuel;
             
             const creationActuelle = creations.find(c => c.id === id);
             creationActuelle.ordre = ordreTemp;
 
-            // On sauvegarde les deux dans Firebase
             const { db, doc, updateDoc } = window.FB;
             await updateDoc(doc(db, "creations", id), { ordre: creationActuelle.ordre });
             await updateDoc(doc(db, "creations", cible.id), { ordre: cible.ordre });
 
-            // On recharge
             chargerCreations();
         }
 
@@ -608,7 +600,6 @@
             } else {
                 document.getElementById('titreModale').textContent = 'Nouvelle création';
                 document.getElementById('creationId').value = '';
-                // Nouvelle création : on la met à la fin (ordre 9999)
                 document.getElementById('ordre').value = 9999;
             }
             

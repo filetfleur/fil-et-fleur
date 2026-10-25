@@ -165,7 +165,9 @@
         .form-avis-group { margin-bottom: 10px; }
         .form-avis-group label { display: block; font-size: 0.8em; font-weight: 600; margin-bottom: 4px; }
         .form-avis-group input, .form-avis-group textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-family: var(--font); font-size: 0.9em; background: var(--bg); color: var(--text); }
-        .star-rating { display: flex; gap: 5px; font-size: 1.5em; cursor: pointer; }
+        
+        /* === ÉTOILES CORRIGÉES === */
+        .star-rating { display: flex; gap: 5px; font-size: 1.8em; cursor: pointer; }
         .star-rating span { color: #d1d5db; transition: color 0.2s; }
         .star-rating span.active { color: #f59e0b; }
 
@@ -254,7 +256,6 @@
             </div>
             <nav class="nav">
                 <button class="nav-btn active" data-tab="galerie" onclick="changerOnglet('galerie')">🌸 Galerie</button>
-                <!-- Nouvel onglet Avis -->
                 <button id="navBiblio" class="nav-btn" style="display:none;" data-tab="bibliotheque" onclick="changerOnglet('bibliotheque')">📚 Bibliothèque</button>
                 <button id="navAvis" class="nav-btn" style="display:none;" data-tab="avis-admin" onclick="changerOnglet('avis-admin')">💬 Avis (<span id="badgeAvis">0</span>)</button>
                 <button id="navStats" class="nav-btn" style="display:none;" data-tab="stats" onclick="changerOnglet('stats')">📊 Statistiques</button>
@@ -318,7 +319,6 @@
             </div>
         </main>
 
-        <!-- === NOUVEL ONGLET : GESTION DES AVIS === -->
         <main id="onglet-avis-admin" class="onglet">
             <div class="biblio-wrapper">
                 <h2 style="margin-bottom: 20px; font-size: 1.3em; color: var(--primary);">Avis en attente de validation</h2>
@@ -395,7 +395,7 @@
         let photosActuelles = [];
         let isAdmin = false;
         let currentFilter = 'tous';
-        let avisNoteActuelle = 5; // Par défaut 5 étoiles
+        let avisNoteActuelle = 5;
         
         const MON_INSTAGRAM = "https://www.instagram.com/fil_et.fleur";
         const MON_TIKTOK = "https://www.tiktok.com/@fil_et_fleur";
@@ -441,7 +441,6 @@
             });
         });
 
-        // === CHARGER LES CRÉATIONS ===
         async function chargerCreations() {
             const { db, collection, getDocs } = window.FB;
             try {
@@ -459,7 +458,6 @@
             }
         }
 
-        // === CHARGER LES AVIS ===
         async function chargerAvis() {
             const { db, collection, getDocs } = window.FB;
             try {
@@ -472,7 +470,6 @@
                     else if (data.statut === 'publie') avisPublies.push(data);
                 });
                 
-                // Mettre à jour le badge du menu
                 if (avisEnAttente.length > 0) {
                     document.getElementById('badgeAvis').textContent = avisEnAttente.length;
                     document.getElementById('badgeAvis').style.color = '#ef4444';
@@ -517,7 +514,6 @@
             const btn = document.querySelector(`.nav-btn[data-tab="${nom}"]`);
             if(btn) btn.classList.add('active');
             
-            // Cacher/Afficher la barre de recherche selon l'onglet
             if (nom === 'galerie') document.getElementById('toolbarGalerie').style.display = 'flex';
             else document.getElementById('toolbarGalerie').style.display = 'none';
 
@@ -847,7 +843,6 @@
             chargerCreations();
         }
 
-        // === GESTION DES AVIS (Admin) ===
         function afficherAvisAdmin() {
             const gridAttente = document.getElementById('avisEnAttenteGrid');
             const gridPublies = document.getElementById('avisPubliesGrid');
@@ -868,7 +863,7 @@
                                 <div class="avis-name">${a.nom}</div>
                                 <div style="font-size:0.8em; color:var(--text-muted)">Pour : ${prodName}</div>
                             </div>
-                            <div class="avis-stars">${'⭐'.repeat(a.note)}</div>
+                            <div class="avis-stars">${'★'.repeat(a.note)}${'☆'.repeat(5-a.note)}</div>
                         </div>
                         <div class="avis-text">"${a.commentaire}"</div>
                         <div class="avis-actions">
@@ -892,7 +887,7 @@
                                 <div class="avis-name">${a.nom}</div>
                                 <div style="font-size:0.8em; color:var(--text-muted)">Pour : ${prodName}</div>
                             </div>
-                            <div class="avis-stars">${'⭐'.repeat(a.note)}</div>
+                            <div class="avis-stars">${'★'.repeat(a.note)}${'☆'.repeat(5-a.note)}</div>
                         </div>
                         <div class="avis-text">"${a.commentaire}"</div>
                         <div class="avis-actions">
@@ -916,12 +911,19 @@
             chargerAvis();
         }
 
-        // === GESTION DES AVIS (Client) ===
+        // === CORRECTION DES ÉTOILES ===
         function setNote(n) {
             avisNoteActuelle = n;
-            document.querySelectorAll('.star-rating span').forEach((star, i) => {
-                if (i < n) star.classList.add('active');
-                else star.classList.remove('active');
+            const stars = document.querySelectorAll('.star-rating span');
+            stars.forEach((star, index) => {
+                // On change le contenu de l'étoile (pleine ou vide)
+                if (index < n) {
+                    star.innerHTML = '★'; // Étoile pleine
+                    star.classList.add('active');
+                } else {
+                    star.innerHTML = '☆'; // Étoile vide
+                    star.classList.remove('active');
+                }
             });
         }
 
@@ -947,7 +949,7 @@
                 });
                 alert("Merci ! Votre avis a bien été envoyé. Il sera publié après validation par Iris.");
                 document.getElementById('formAvis').reset();
-                setNote(5); // Reset étoiles
+                setNote(5); 
                 fermerDetail(); 
             } catch (e) {
                 console.error("Erreur envoi avis:", e);
@@ -964,7 +966,6 @@
             const nbLikes = c.likes || 0;
             const heartIcon = nbLikes > 0 ? '❤️' : '🤍';
 
-            // Récupérer les avis publiés pour cette création
             const avisProduit = avisPublies.filter(a => a.creationId === c.id);
             
             let avisHtml = '';
@@ -973,7 +974,7 @@
                     <div class="avis-item">
                         <div class="avis-item-header">
                             <span class="avis-item-name">${a.nom}</span>
-                            <span class="avis-item-stars">${'⭐'.repeat(a.note)}</span>
+                            <span class="avis-item-stars">${'★'.repeat(a.note)}${'☆'.repeat(5-a.note)}</span>
                         </div>
                         <div class="avis-item-text">"${a.commentaire}"</div>
                     </div>
@@ -1018,11 +1019,11 @@
                             <div class="form-avis-group">
                                 <label>Votre note :</label>
                                 <div class="star-rating" id="starRating">
-                                    <span onclick="setNote(1)">⭐</span>
-                                    <span onclick="setNote(2)">⭐</span>
-                                    <span onclick="setNote(3)">⭐</span>
-                                    <span onclick="setNote(4)">⭐</span>
-                                    <span onclick="setNote(5)">⭐</span>
+                                    <span onclick="setNote(1)" class="active">★</span>
+                                    <span onclick="setNote(2)" class="active">★</span>
+                                    <span onclick="setNote(3)" class="active">★</span>
+                                    <span onclick="setNote(4)" class="active">★</span>
+                                    <span onclick="setNote(5)" class="active">★</span>
                                 </div>
                             </div>
                             <div class="form-avis-group">
@@ -1039,7 +1040,9 @@
                 </div>
             `;
             document.getElementById('modaleDetail').classList.add('actif');
-            setNote(5); // Réinitialiser les étoiles à 5 à l'ouverture
+            
+            // On initialise les étoiles à 5 au moment d'ouvrir
+            setTimeout(() => setNote(5), 10);
         }
 
         function fermerDetail() { document.getElementById('modaleDetail').classList.remove('actif'); }

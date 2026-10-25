@@ -24,10 +24,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // On expose les fonctions au reste de la page
         window.FB = { db, auth, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, signInWithEmailAndPassword, signOut, onAuthStateChanged };
-        
-        // On prévient la page que Firebase est prêt
         window.dispatchEvent(new Event('firebaseReady'));
     </script>
 
@@ -238,13 +235,14 @@
                     <label>Photos</label>
                     <div class="photo-input-row"><label class="file-label" style="width: 100%; justify-content: center;">📁 Ajouter des photos<input type="file" id="photoFile" accept="image/*" multiple onchange="previewPhotos(event)" style="display:none"></label></div>
                     <div id="previewContainer" class="preview-box"></div>
+                    <p id="uploadStatus" style="font-size:0.8em; color:var(--primary); margin-top:5px;"></p>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Prix (€)</label><input type="number" id="prix" step="0.01" min="0"></div>
                     <div class="form-group"><label>Date de vente</label><input type="date" id="dateVente"></div>
                 </div>
                 <div class="form-group"><label>Lien Vinted</label><input type="url" id="lienVinted"></div>
-                <div class="form-boutons"><button type="button" class="btn-secondary" onclick="fermerFormulaire()">Annuler</button><button type="submit" class="btn-primary">💾 Enregistrer</button></div>
+                <div class="form-boutons"><button type="button" class="btn-secondary" onclick="fermerFormulaire()">Annuler</button><button type="submit" class="btn-primary" id="btnSubmit">💾 Enregistrer</button></div>
             </form>
         </div>
     </div>
@@ -258,18 +256,14 @@
 
     <footer class="footer"><p>Fil et Fleur by Iris · Fait avec 🧶 et ❤️</p></footer>
 
-    <!-- LE SCRIPT DE L'APPLICATION -->
     <script>
         let creations = [];
         let photosActuelles = [];
         let triBiblio = { cle: 'nom', sens: 1 };
         let isAdmin = false;
 
-        // On attend que Firebase soit prêt
         window.addEventListener('firebaseReady', () => {
             const { auth, onAuthStateChanged } = window.FB;
-            
-            // Surveiller l'état de connexion
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     isAdmin = true;
@@ -283,7 +277,7 @@
                     document.getElementById('mainContent').style.display = 'block';
                     document.getElementById('adminActions').style.display = 'none';
                     document.getElementById('loginBtn').style.display = 'inline-flex';
-                    chargerCreations(); // En lecture seule
+                    chargerCreations(); 
                 }
             });
         });
@@ -313,7 +307,6 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const errorMsg = document.getElementById('loginError');
-            
             try {
                 const { auth, signInWithEmailAndPassword } = window.FB;
                 await signInWithEmailAndPassword(auth, email, password);
@@ -328,7 +321,6 @@
             await signOut(auth);
         }
 
-        // --- Le reste des fonctions (affichage, formulaire, stats) ---
         function changerOnglet(nom) {
             document.querySelectorAll('.onglet').forEach(o => o.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -380,7 +372,7 @@
         }
 
         function afficherBiblio() {
-            if (!isAdmin) return; // La bibliothèque n'est visible que par l'admin
+            if (!isAdmin) return;
             const tbody = document.getElementById('biblioBody');
             const liste = getCreationsFiltrees();
             liste.sort((a, b) => {
@@ -427,13 +419,13 @@
                 const pct = Math.round(n / total * 100);
                 return `<div class="chart-bar"><span class="chart-bar-label">${s.label}</span><div class="chart-bar-fill ${s.cls}" style="width:${Math.max(pct, 3)}%">${n}</div></div>`;
             }).join('');
-            // (Le reste des stats est simplifié pour ce code, tu peux le rallonger si besoin)
         }
 
         function ouvrirFormulaire(creation = null) {
             if (!isAdmin) return;
             document.getElementById('formCreation').reset();
             document.getElementById('previewContainer').innerHTML = '';
+            document.getElementById('uploadStatus').textContent = '';
             photosActuelles = [];
             if (creation) {
                 document.getElementById('titreModale').textContent = 'Modifier';
@@ -458,16 +450,46 @@
         function fermerFormulaire() { document.getElementById('modale').classList.remove('actif'); }
         window.onclick = (e) => { if (e.target === document.getElementById('modale')) fermerFormulaire(); if (e.target === document.getElementById('modaleDetail')) fermerDetail(); }
 
-        function previewPhotos(event) {
+        // --- NOUVELLE FONCTION DE COMPRESSION D'IMAGE ---
+        async function previewPhotos(event) {
             const files = event.target.files;
+            const statusText = document.getElementById('uploadStatus');
+            
             for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    photosActuelles.push(e.target.result);
-                    document.getElementById('previewContainer').innerHTML += `<img src="${e.target.result}">`;
-                };
-                reader.readAsDataURL(files[i]);
+                statusText.textContent = `Compression de la photo ${i+1}/${files.length}...`;
+                const compressedBase64 = await compresserImage(files[i]);
+                photosActuelles.push(compressedBase64);
+                document.getElementById('previewContainer').innerHTML += `<img src="${compressedBase64}">`;
             }
+            statusText.textContent = 'Photos prêtes !';
+            setTimeout(() => statusText.textContent = '', 3000);
+        }
+
+        function compresserImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800; // On réduit la largeur maximale à 800px
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        // On convertit en JPEG avec une qualité de 70% (très bon compromis)
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        resolve(dataUrl);
+                    };
+                    img.onerror = reject;
+                };
+                reader.onerror = reject;
+            });
         }
 
         async function sauvegarderCreation(event) {
@@ -482,14 +504,9 @@
                 lienVinted: document.getElementById('lienVinted').value.trim(),
                 dateVente: document.getElementById('dateVente').value
             };
-            
             const { db, collection, addDoc, doc, updateDoc } = window.FB;
-            
-            if (id) {
-                await updateDoc(doc(db, "creations", id), data);
-            } else {
-                await addDoc(collection(db, "creations"), data);
-            }
+            if (id) { await updateDoc(doc(db, "creations", id), data); }
+            else { await addDoc(collection(db, "creations"), data); }
             fermerFormulaire();
             chargerCreations();
         }
@@ -528,8 +545,6 @@
 
         function fermerDetail() { document.getElementById('modaleDetail').classList.remove('actif'); }
         function formaterDate(dateStr) { return new Date(dateStr).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }); }
-
-        // Mode sombre
         function toggleDarkMode() { document.body.classList.toggle('dark'); }
     </script>
 </body>

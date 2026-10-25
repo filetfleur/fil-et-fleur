@@ -29,7 +29,6 @@
     </script>
 
     <style>
-        /* [Le CSS reste exactement le même que la fois précédente] */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg: #fafaf9; --bg-soft: #f5f5f4; --surface: #ffffff; --text: #1c1917;
@@ -46,6 +45,7 @@
         }
         body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; transition: background 0.3s, color 0.3s; }
         
+        /* ===== HEADER & BANNIÈRE ===== */
         .topbar { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
         .topbar-inner { max-width: 1280px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
         .brand { display: flex; align-items: center; gap: 12px; }
@@ -198,7 +198,6 @@
     </style>
 </head>
 <body>
-    <!-- [Le corps HTML reste exactement le même] -->
     <header class="topbar">
         <div class="topbar-inner">
             <div class="brand">
@@ -424,6 +423,7 @@
             const messageVide = document.getElementById('messageVide');
             const liste = getCreationsFiltrees();
             
+            // Tri basé sur l'ordre personnalisé
             liste.sort((a, b) => a.ordre - b.ordre);
             
             galerie.innerHTML = '';
@@ -520,7 +520,7 @@
             });
         }
 
-        // === NOUVELLE FONCTION DE TRI (Mise à jour une par une pour éviter les bugs) ===
+        // === TRI INSTANTANÉ (SANS RECHARGEMENT) ===
         async function changerOrdre(id, direction) {
             let liste = [...creations].sort((a, b) => a.ordre - b.ordre);
             const index = liste.findIndex(c => c.id === id);
@@ -532,20 +532,30 @@
             else if (direction === 'down' && index < liste.length - 1) cibleIndex = index + 1;
             else return;
 
+            // 1. On échange les éléments
             const temp = liste[index];
             liste[index] = liste[cibleIndex];
             liste[cibleIndex] = temp;
 
+            // 2. On met à jour les numéros d'ordre dans la mémoire
+            for (let i = 0; i < liste.length; i++) {
+                const item = creations.find(c => c.id === liste[i].id);
+                if (item) item.ordre = i + 1;
+            }
+
+            // 3. On met à jour l'affichage instantanément
+            afficherBiblio();
+            afficherCreations();
+
+            // 4. On sauvegarde dans Firebase (en arrière-plan)
             const { db, doc, updateDoc } = window.FB;
             try {
-                // On boucle et on met à jour un par un (plus sûr)
                 for (let i = 0; i < liste.length; i++) {
                     await updateDoc(doc(db, "creations", liste[i].id), { ordre: i + 1 });
                 }
-                chargerCreations();
             } catch (e) {
                 console.error("Erreur de tri :", e);
-                alert("Impossible de sauvegarder l'ordre. Vérifie ta connexion internet.");
+                alert("Impossible de sauvegarder l'ordre. Vérifie ta connexion.");
             }
         }
 
@@ -590,6 +600,7 @@
             } else {
                 document.getElementById('titreModale').textContent = 'Nouvelle création';
                 document.getElementById('creationId').value = '';
+                // Nouvelle création : on la met à la fin (ordre 9999)
                 document.getElementById('ordre').value = 9999;
             }
             

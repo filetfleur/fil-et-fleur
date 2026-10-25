@@ -213,7 +213,15 @@
         
         #detailContenu { padding: 24px; }
         .detail-galerie { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .detail-image { width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-sm); background: var(--bg-soft); }
+        
+        /* === NOUVEAU : IMAGES CLIQUABLES === */
+        .detail-image { 
+            width: 100%; height: 200px; object-fit: cover; 
+            border-radius: var(--radius-sm); background: var(--bg-soft); 
+            cursor: zoom-in; transition: opacity 0.2s;
+        }
+        .detail-image:hover { opacity: 0.8; }
+
         .detail-info { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
         .detail-info-item { padding: 12px; background: var(--bg-soft); border-radius: var(--radius-sm); }
         .detail-info-item label { display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
@@ -241,6 +249,23 @@
             .form-row { grid-template-columns: 1fr; } .biblio-table { font-size: 0.85em; } .biblio-table th, .biblio-table td { padding: 8px; }
             .biblio-table th:nth-child(4), .biblio-table td:nth-child(4) { display: none; } .detail-info { grid-template-columns: 1fr; } .hero { padding: 40px 20px; } .hero h2 { font-size: 1.8em; }
             .social-buttons a { min-width: 100%; }
+        }
+
+        /* === STYLE POUR LE ZOOM PHOTO === */
+        #imageModal {
+            display: none; position: fixed; z-index: 2000; inset: 0;
+            background: rgba(0,0,0,0.9); justify-content: center; align-items: center;
+            padding: 20px; cursor: zoom-out;
+        }
+        #imageModal.actif { display: flex; }
+        #imageModal img {
+            max-width: 100%; max-height: 95vh; object-fit: contain;
+            border-radius: 8px; box-shadow: 0 0 30px rgba(255,255,255,0.1);
+        }
+        .close-zoom {
+            position: absolute; top: 20px; right: 30px;
+            color: white; font-size: 3em; cursor: pointer;
+            line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
     </style>
 </head>
@@ -384,6 +409,12 @@
             <div class="modale-header"><h2 id="detailTitre">Détail</h2><span class="fermer" onclick="fermerDetail()">&times;</span></div>
             <div id="detailContenu"></div>
         </div>
+    </div>
+
+    <!-- NOUVELLE MODALE POUR LE ZOOM PHOTO -->
+    <div id="imageModal">
+        <span class="close-zoom" onclick="fermerZoom()">&times;</span>
+        <img id="imageZoom" src="" alt="Zoom">
     </div>
 
     <footer class="footer"><p>Fil et Fleur by Iris · Fait avec 🧶 et ❤️</p></footer>
@@ -768,7 +799,11 @@
         }
 
         function fermerFormulaire() { document.getElementById('modale').classList.remove('actif'); }
-        window.onclick = (e) => { if (e.target === document.getElementById('modale')) fermerFormulaire(); if (e.target === document.getElementById('modaleDetail')) fermerDetail(); }
+        window.onclick = (e) => { 
+            if (e.target === document.getElementById('modale')) fermerFormulaire(); 
+            if (e.target === document.getElementById('modaleDetail')) fermerDetail(); 
+            if (e.target === document.getElementById('imageModal')) fermerZoom();
+        }
 
         async function previewPhotos(event) {
             const files = event.target.files;
@@ -911,12 +946,10 @@
             chargerAvis();
         }
 
-        // === CORRECTION DES ÉTOILES ===
         function setNote(n) {
             avisNoteActuelle = n;
             const stars = document.querySelectorAll('.star-rating span');
             stars.forEach((star, index) => {
-                // On change le contenu de l'étoile (pleine ou vide)
                 if (index < n) {
                     star.innerHTML = '★'; // Étoile pleine
                     star.classList.add('active');
@@ -957,11 +990,25 @@
             }
         }
 
+        // === FONCTION POUR LE ZOOM PHOTO ===
+        function ouvrirZoom(src) {
+            document.getElementById('imageZoom').src = src;
+            document.getElementById('imageModal').classList.add('actif');
+        }
+
+        function fermerZoom() {
+            document.getElementById('imageModal').classList.remove('actif');
+        }
+
         function ouvrirDetail(id) {
             const c = creations.find(x => x.id === id);
             if (!c) return;
             document.getElementById('detailTitre').textContent = c.nom;
-            let photosHtml = c.photos && c.photos.length > 0 ? `<div class="detail-galerie">${c.photos.map(p => `<img src="${p}" class="detail-image">`).join('')}</div>` : `<div class="carte-image" style="height:300px;">🌸</div>`;
+            
+            // Ajout du onclick pour le zoom
+            let photosHtml = c.photos && c.photos.length > 0 
+                ? `<div class="detail-galerie">${c.photos.map(p => `<img src="${p}" class="detail-image" onclick="ouvrirZoom('${p}')">`).join('')}</div>` 
+                : `<div class="carte-image" style="height:300px;">🌸</div>`;
             
             const nbLikes = c.likes || 0;
             const heartIcon = nbLikes > 0 ? '❤️' : '🤍';
@@ -1006,7 +1053,6 @@
                     ${isAdmin ? `<div style="width:100%; margin-top: 10px; display:flex; gap:10px;"><button class="btn-secondary" onclick="fermerDetail(); modifierCreation('${c.id}')" style="flex:1;">✏️ Modifier</button><button class="btn-secondary" onclick="supprimerCreation('${c.id}')" style="color:var(--danger); flex:1;">🗑️ Supprimer</button></div>` : ''}
                 </div>
 
-                <!-- SECTION AVIS CLIENTS -->
                 <div class="avis-section">
                     <h3>Avis clients (${avisProduit.length})</h3>
                     <div class="avis-list">
@@ -1041,7 +1087,6 @@
             `;
             document.getElementById('modaleDetail').classList.add('actif');
             
-            // On initialise les étoiles à 5 au moment d'ouvrir
             setTimeout(() => setNote(5), 10);
         }
 

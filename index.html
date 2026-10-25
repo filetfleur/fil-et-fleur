@@ -155,7 +155,7 @@
         .file-label { background: var(--bg-soft); border: 1px solid var(--border); padding: 10px 16px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.9em; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap; transition: all 0.2s; }
         .file-label:hover { background: var(--border); color: var(--primary); }
         
-        /* === NOUVEAU : GESTION DES PHOTOS DANS LE FORMULAIRE === */
+        /* GESTION DES PHOTOS DANS LE FORMULAIRE */
         .preview-box { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
         .photo-item { position: relative; width: 90px; height: 90px; border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; }
@@ -555,7 +555,6 @@
             document.getElementById('modale').classList.add('actif');
         }
 
-        // === NOUVELLE FONCTION : Afficher les photos avec boutons ===
         function afficherApercuPhotos() {
             const container = document.getElementById('previewContainer');
             container.innerHTML = '';
@@ -580,7 +579,6 @@
         function deplacerPhoto(index, direction) {
             const newIndex = index + direction;
             if (newIndex >= 0 && newIndex < photosActuelles.length) {
-                // Échange les deux photos
                 [photosActuelles[index], photosActuelles[newIndex]] = [photosActuelles[newIndex], photosActuelles[index]];
                 afficherApercuPhotos();
             }
@@ -600,7 +598,7 @@
             afficherApercuPhotos();
             statusText.textContent = 'Photos prêtes !';
             setTimeout(() => statusText.textContent = '', 3000);
-            event.target.value = ''; // Permet de re-sélectionner le même fichier
+            event.target.value = ''; 
         }
 
         function compresserImage(file) {
@@ -683,7 +681,7 @@
                     <div class="social-buttons">
                         <a href="${MON_INSTAGRAM}" target="_blank" class="btn-secondary" style="text-decoration:none;">📸 Instagram</a>
                         <a href="${MON_TIKTOK}" target="_blank" class="btn-secondary" style="text-decoration:none;">🎵 TikTok</a>
-                        <a href="${https://www.facebook.com/laurent.outan.3762/}" target="_blank" class="btn-secondary" style="text-decoration:none;">📘 Facebook</a>
+                        <a href="${MON_FACEBOOK}" target="_blank" class="btn-secondary" style="text-decoration:none;">📘 Facebook</a>
                     </div>
                     
                     <button id="likeBtnDetail" class="like-btn-detail ${nbLikes > 0 ? 'liked' : ''}" data-id="${c.id}" onclick="liker('${c.id}', event)" style="margin-top: 10px;">

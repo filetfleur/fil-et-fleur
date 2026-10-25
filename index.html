@@ -121,14 +121,15 @@
         .biblio-table tr:last-child td { border-bottom: none; } .biblio-table tr:hover td { background: var(--bg-soft); }
         .biblio-thumb { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; background: var(--bg-soft); display: flex; align-items: center; justify-content: center; font-size: 1.2em; }
         
-        .biblio-actions { display: flex; gap: 6px; align-items: center; }
-        .biblio-actions button, .biblio-actions a { padding: 6px 10px; border: 1px solid var(--border); background: var(--surface); border-radius: 6px; font-size: 0.8em; cursor: pointer; text-decoration: none; color: var(--text); transition: all 0.2s; font-family: var(--font); }
-        .biblio-actions button:hover, .biblio-actions a:hover { border-color: var(--primary); color: var(--primary); }
+        .biblio-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .biblio-actions button { padding: 6px 10px; border: 1px solid var(--border); background: var(--surface); border-radius: 6px; font-size: 0.8em; cursor: pointer; color: var(--text); transition: all 0.2s; font-family: var(--font); }
+        .biblio-actions button:hover { border-color: var(--primary); color: var(--primary); }
         
-        /* Boutons de tri */
-        .btn-sort { display: flex; flex-direction: column; gap: 2px; margin-right: 5px; }
-        .btn-sort button { padding: 2px 6px; font-size: 0.7em; border-radius: 4px; cursor: pointer; background: var(--bg-soft); border: 1px solid var(--border); color: var(--text-muted); }
-        .btn-sort button:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+        /* Boutons de tri (Texte au lieu des emojis) */
+        .btn-sort { display: flex; gap: 4px; margin-right: 5px; }
+        .btn-sort button { padding: 4px 8px; font-size: 0.75em; font-weight: 600; background: var(--bg-soft); border: 1px solid var(--border); color: var(--text); border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+        .btn-sort button:hover:not(:disabled) { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+        .btn-sort button:disabled { opacity: 0.3; cursor: not-allowed; }
 
         .stats-grid { max-width: 1280px; margin: 0 auto 40px; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         .stat-card { background: var(--surface); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
@@ -265,7 +266,7 @@
         <main id="onglet-bibliotheque" class="onglet">
             <div class="biblio-wrapper">
                 <table class="biblio-table">
-                    <thead><tr><th style="width:60px;">Photo</th><th onclick="trierBiblio('nom')" class="sortable">Nom ↕</th><th onclick="trierBiblio('statut')" class="sortable">Statut ↕</th><th onclick="trierBiblio('prix')" class="sortable">Prix ↕</th><th onclick="trierBiblio('dateVente')" class="sortable">Vente ↕</th><th style="width:180px;">Actions</th></tr></thead>
+                    <thead><tr><th style="width:60px;">Photo</th><th onclick="trierBiblio('nom')" class="sortable">Nom ↕</th><th onclick="trierBiblio('statut')" class="sortable">Statut ↕</th><th onclick="trierBiblio('prix')" class="sortable">Prix ↕</th><th onclick="trierBiblio('dateVente')" class="sortable">Vente ↕</th><th style="width:220px;">Actions</th></tr></thead>
                     <tbody id="biblioBody"></tbody>
                 </table>
             </div>
@@ -302,7 +303,6 @@
                     <div class="form-group"><label>Date de vente</label><input type="date" id="dateVente"></div>
                 </div>
                 <div class="form-group"><label>Lien Vinted</label><input type="url" id="lienVinted"></div>
-                <!-- Champ Ordre caché -->
                 <input type="hidden" id="ordre">
                 <div class="form-boutons"><button type="button" class="btn-secondary" onclick="fermerFormulaire()">Annuler</button><button type="submit" class="btn-primary" id="btnSubmit">💾 Enregistrer</button></div>
             </form>
@@ -324,7 +324,6 @@
         let triBiblio = { cle: 'nom', sens: 1 };
         let isAdmin = false;
         
-        // ⚠️ TES RÉSEAUX SOCIAUX ICI ⚠️
         const MON_INSTAGRAM = "https://www.instagram.com/fil_et.fleur";
         const MON_TIKTOK = "https://www.tiktok.com/@fil_et_fleur";
         const MON_FACEBOOK = "https://www.facebook.com/laurent.outan.3762/";
@@ -503,8 +502,9 @@
                 const date = c.dateVente ? formaterDate(c.dateVente) : '—';
                 const likes = c.likes ? `❤️ ${c.likes}` : '—';
                 
-                const btnHaut = index > 0 ? `<button onclick="changerOrdre('${c.id}', ${c.ordre}, 'up')" title="Monter">⬆️</button>` : `<button style="opacity:0.3; cursor:default;" disabled>⬆️</button>`;
-                const btnBas = index < liste.length - 1 ? `<button onclick="changerOrdre('${c.id}', ${c.ordre}, 'down')" title="Descendre">⬇️</button>` : `<button style="opacity:0.3; cursor:default;" disabled>⬇️</button>`;
+                // Vrais boutons avec du texte
+                const btnHaut = index > 0 ? `<button onclick="changerOrdre('${c.id}', ${c.ordre}, 'up')" title="Monter">Monter</button>` : `<button disabled>Monter</button>`;
+                const btnBas = index < liste.length - 1 ? `<button onclick="changerOrdre('${c.id}', ${c.ordre}, 'down')" title="Descendre">Descendre</button>` : `<button disabled>Descendre</button>`;
 
                 tr.innerHTML = `
                     <td>${img}</td>

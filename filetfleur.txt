@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fil et Fleur — By IRIS Mes Créations</title>
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #fafaf9;
+            --bg-soft: #f5f5f4;
+            --surface: #ffffff;
+            --text: #1c1917;
+            --text-muted: #78716c;
+            --text-light: #a8a29e;
+            --border: #e7e5e4;
+            --primary: #be185d;
+            --primary-hover: #9d174d;
+            --primary-soft: #fdf2f8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --danger: #ef4444;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+        }
+
+        body.dark {
+            --bg: #0f0f0f;
+            --bg-soft: #1a1a1a;
+            --surface: #1f1f1f;
+            --text: #f5f5f4;
+            --text-muted: #a8a29e;
+            --text-light: #57534e;
+            --border: #2a2a2a;
+            --primary-soft: #2a1a23;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ===== HEADER ===== */
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .topbar-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon { font-size: 2em; line-height: 1; }
+
+        .brand h1 {
+            font-size: 1.25em;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .brand-sub { font-size: 0.8em; color: var(--text-muted); font-weight: 500; }
+
+        .nav {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-soft);
+            padding: 4px;
+            border-radius: 10px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font);
+        }
+
+        .nav-btn:hover { color: var(--text); }
+
+        .nav-btn.active {
+            background: var(--surface);
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .topbar-actions { display: flex; gap: 8px; }
+
+        .icon-btn {
+            background: var(--bg-soft);
+            border: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover { background: var(--border); }
+
+        /* ===== KPI BAR ===== */
+        .kpi-bar {
+            max-width: 1280px;
+            margin: 24px auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .kpi {
+            background: var(--surface);
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s;
+        }
+
+        .kpi:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+        .kpi-value {
+            display: block;
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .kpi-label {
+            display: block;
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .kpi-accent .kpi-value { color: var(--primary); }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            max-width: 1280px;
+            margin: 0 auto 24px;
+            padding: 0 24px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .search, .select {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 0.95em;
+            font-family: var(--font);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search { flex: 1; min-width: 200px; }
+
+        .search:focus, .select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        /* ===== BOUTONS ===== */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s, transform 0.1s;
+            font-family: var(--font);
+        }
+
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .btn-secondary {
+            background: var(--bg-soft);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: background 0.2s;
+        }
+
+        .btn-secondary:hover { background: var(--border); }
+
+        /* ===== ONGLETS ===== */
+        .onglet { display: none; animation: fadeIn 0.3s; }
+        .onglet.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== GALERIE ===== */
+        .galerie {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .carte {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.25s, box-shadow 0.25s;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .carte:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+        .carte-image {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--primary-soft), var(--bg-soft));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: var(--text-light);
+        }
+
+        .carte-body {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            align-self: flex-start;
+        }
+
+        .badge-en-vente { background: #fef3c7; color: #92400e; }
+        .badge-vendu { background: #d1fae5; color: #065f46; }
+        .badge-en-cours { background: #dbeafe; color: #1e40af; }
+
+        body.dark .badge-en-vente { background: #422006; color: #fbbf24; }
+        body.dark .badge-vendu { background: #064e3b; color: #6ee7b7; }
+        body.dark .badge-en-cours { background: #1e3a8a; color: #93c5fd; }
+
+        .carte-body h3 {
+            font-size: 1.05em;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .carte-desc {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .carte-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .prix { font-weight: 700; font-size: 1.1em; color: var(--primary); }
+        .date-vente { font-size: 0.75em; color: var(--text-light); }
+
+        /* ===== BIBLIOTHÈQUE ===== */
+        .biblio-wrapper { max-width: 1280px; margin: 0 auto 40px; padding: 0 24px; }
+
+        .biblio-table {
+            width: 100%;
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .biblio-table th {
+            background: var(--bg-soft);
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .biblio-table th.sortable { cursor: pointer; user-select: none; }
+        .biblio-table th.sortable:hover { color: var(--primary); }
+
+        .biblio-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9em;
+            vertical-align: middle;
+        }
+
+        .biblio-table tr:last-child td { border-bottom: none; }
+        .biblio-table tr:hover td { background: var(--bg-soft); }
+
+        .biblio-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: var(--bg-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+
+        .biblio-actions { display: flex; gap: 6px; }
+
+        .biblio-actions button, .biblio-actions a {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 6px;
+            font-size: 0.8em;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+            font-family: var(--font);
+        }
+
+        .biblio-actions button:hover, .biblio-actions a:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* ===== STATS ===== */
+        .stats-grid {
+            max-width: 1280px;
+            margin: 0 auto 40px;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-card h3 {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .chart-bars { display: flex; flex-direction: column; gap: 12px; }
+        .chart-bar { display: flex; align-items: center; gap: 12px; }
+        .chart-bar-label { min-width: 90px; font-size: 0.85em; color: var(--text); font-weight: 500; }
+
+        .chart-bar-fill {
+            height: 28px;
+            border-radius: 6px;
+            transition: width 0.5s;
+            min-width: 4px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: white;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .chart-bar-fill.pink { background: linear-gradient(90deg, #ec4899, #be185d); }
+        .chart-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+        .chart-bar-fill.green { background: linear-gradient(90deg, #10b981, #047857); }
+        .chart-bar-fill.amber { background: linear-gradient(90deg, #f59e0b, #b45309); }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9em;
+        }
+
+        .list-item:last-child { border-bottom: none; }
+        .list-item strong { color: var(--text); }
+        .list-item span { color: var(--text-muted); }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .empty-icon { font-size: 4em; margin-bottom: 16px; opacity: 0.5; }
+        .empty-state h3 { font-size: 1.3em; color: var(--text); margin-bottom: 8px; }
+        .empty-state p { margin-bottom: 20px; }
+
+        /* ===== MODALE ===== */
+        .modale {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            overflow-y: auto;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modale.actif { display: flex; align-items: flex-start; justify-content: center; }
+
+        .modale-contenu {
+            background: var(--surface);
+            border-radius: var(--radius);
+            max-width: 640px;
+            width: 100%;
+            margin: 20px auto;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .modale-detail { max-width: 700px; }
+
+        .modale-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modale-header h2 { font-size: 1.2em; font-weight: 700; color: var(--text); }
+
+        .fermer {
+            font-size: 1.8em;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+            padding: 0 6px;
+            transition: color 0.2s;
+        }
+
+        .fermer:hover { color: var(--primary); }
+
+        #formCreation { padding: 24px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { margin-bottom: 16px; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.85em;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95em;
+            font-family: var(--font);
+            background: var(--surface);
+            color: var(--text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .photo-input-row { display: flex; gap: 8px; }
+        .photo-input-row input { flex: 1; }
+
+        .file-label {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .file-label:hover { background: var(--border); color: var(--primary); }
+
+        .preview-box { margin-top: 12px; }
+        .preview-box img { max-width: 150px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+
+        /* ===== BLOC AGNES ===== */
+        .agnes-bloc {
+            margin-top: 20px;
+            padding: 16px;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: var(--radius-sm);
+            border: 1px solid #bfdbfe;
+        }
+
+        body.dark .agnes-bloc {
+            background: linear-gradient(135deg, #1e3a5f, #0c2340);
+            border-color: #1e40af;
+        }
+
+        .agnes-header { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+        .agnes-icon { font-size: 1.4em; }
+        .agnes-header strong { color: #1e40af; font-size: 0.95em; }
+        body.dark .agnes-header strong { color: #93c5fd; }
+
+        .agnes-aide { font-size: 0.8em; color: #3730a3; margin-top: 2px; }
+        body.dark .agnes-aide { color: #bfdbfe; }
+
+        .agnes-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #93c5fd;
+            border-radius: var(--radius-sm);
+            font-size: 0.9em;
+            background: var(--surface);
+            color: var(--text);
+            font-family: var(--font);
+        }
+
+        .agnes-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+        .btn-agnes {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 9px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: background 0.2s;
+            font-family: var(--font);
+        }
+
+        .btn-agnes:hover { background: #0369a1; }
+        .btn-agnes-alt { background: #7c3aed; }
+        .btn-agnes-alt:hover { background: #6d28d9; }
+
+        .agnes-statut { margin-top: 10px; font-size: 0.85em; min-height: 1.2em; color: var(--text-muted); }
+
+        /* ===== DÉTAIL ===== */
+        #detailContenu { padding: 24px; }
+
+        .detail-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            background: var(--bg-soft);
+        }
+
+        .detail-info { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+        .detail-info-item { padding: 12px; background: var(--bg-soft); border-radius: var(--radius-sm); }
+
+        .detail-info-item label {
+            display: block;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .detail-info-item span { font-weight: 600; color: var(--text); }
+
+        .detail-description {
+            padding: 16px;
+            background: var(--bg-soft);
+            border-radius: var(--radius-sm);
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        /* ===== FORM BOUTONS ===== */
+        .form-boutons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer { text-align: center; padding: 40px 20px 30px; color: var(--text-muted); font-size: 0.9em; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .topbar-inner { padding: 12px 16px; }
+            .nav { order: 3; width: 100%; justify-content: center; overflow-x: auto; }
+            .nav-btn { padding: 8px 12px; font-size: 0.85em; white-space: nowrap; }
+            .kpi-bar, .toolbar, .galerie, .biblio-wrapper, .stats-grid { padding-left: 16px; padding-right: 16px; }
+            .kpi-value { font-size: 1.6em; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar-left { flex-direction: column; }
+            .search, .select { width: 100%; }
+            .form-row { grid-template-columns: 1fr; }
+            .biblio-table { font-size: 0.85em; }
+            .biblio-table th, .biblio-table td { padding: 8px; }
+            .biblio-table th:nth-child(4), .biblio-table td:nth-child(4) { display: none; }
+            .detail-info { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER ===== -->
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <span class="brand-icon">🌸</span>
+                <div>
+                    <h1>Fil et Fleur</h1>
+                    <p class="brand-sub">Peluches faites main</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active" data-tab="galerie" onclick="changerOnglet('galerie')">🖼️ Galerie</button>
+                <button class="nav-btn" data-tab="bibliotheque" onclick="changerOnglet('bibliotheque')">📚 Bibliothèque</button>
+                <button class="nav-btn" data-tab="stats" onclick="changerOnglet('stats')">📊 Statistiques</button>
+            </nav>
+            <div class="topbar-actions">
+                <button class="icon-btn" onclick="toggleDarkMode()" title="Mode sombre">🌙</button>
+                <button class="icon-btn" onclick="exporterDonnees()" title="Exporter">📤</button>
+                <button class="icon-btn" onclick="document.getElementById('importFile').click()" title="Importer">📥</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importerDonnees(event)">
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== KPI BAR ===== -->
+    <section class="kpi-bar">
+        <div class="kpi"><span class="kpi-value" id="statTotal">0</span><span class="kpi-label">Créations</span></div>
+        <div class="kpi"><span class="kpi-value" id="statEnVente">0</span><span class="kpi-label">En vente</span></div>
+        <div class="kpi"><span class="kpi-value" id="statVendus">0</span><span class="kpi-label">Vendus</span></div>
+        <div class="kpi kpi-accent"><span class="kpi-value" id="statRevenu">0 €</span><span class="kpi-label">Chiffre d'affaires</span></div>
+    </section>
+
+    <!-- ===== TOOLBAR ===== -->
+    <section class="toolbar">
+        <div class="toolbar-left">
+            <input type="text" id="recherche" class="search" placeholder="🔍 Rechercher une création..." oninput="afficherCreations(); afficherBiblio();">
+            <select id="filtreStatut" class="select" onchange="afficherCreations(); afficherBiblio();">
+                <option value="tous">Tous les statuts</option>
+                <option value="en-vente">En vente</option>
+                <option value="vendu">Vendus</option>
+                <option value="en-cours">En cours</option>
+            </select>
+        </div>
+        <button class="btn-primary" onclick="ouvrirFormulaire()"><span>➕</span> Nouvelle création</button>
+    </section>
+
+    <!-- ===== ONGLET GALERIE ===== -->
+    <main id="onglet-galerie" class="onglet active">
+        <section id="galerie" class="galerie"></section>
+        <div id="messageVide" class="empty-state" style="display:none;">
+            <div class="empty-icon">🌸</div>
+            <h3>Aucune création pour le moment</h3>
+            <p>Commence par ajouter ta première peluche !</p>
+            <button class="btn-primary" onclick="ouvrirFormulaire()">➕ Ajouter une création</button>
+        </div>
+    </main>
+
+    <!-- ===== ONGLET BIBLIOTHÈQUE ===== -->
+    <main id="onglet-bibliotheque" class="onglet">
+        <div class="biblio-wrapper">
+            <table class="biblio-table">
+                <thead>
+                    <tr>
+                        <th style="width:60px;">Photo</th>
+                        <th onclick="trierBiblio('nom')" class="sortable">Nom ↕</th>
+                        <th onclick="trierBiblio('statut')" class="sortable">Statut ↕</th>
+                        <th onclick="trierBiblio('prix')" class="sortable">Prix ↕</th>
+                        <th onclick="trierBiblio('dateVente')" class="sortable">Vente ↕</th>
+                        <th style="width:180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="biblioBody"></tbody>
+            </table>
+            <div id="biblioVide" class="empty-state" style="display:none;">
+                <div class="empty-icon">📚</div>
+                <h3>Bibliothèque vide</h3>
+                <p>Ajoute des créations pour les retrouver ici.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== ONGLET STATISTIQUES ===== -->
+    <main id="onglet-stats" class="onglet">
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Répartition par statut</h3><div class="chart-bars" id="chartStatut"></div></div>
+            <div class="stat-card"><h3>Ventes par mois</h3><div class="chart-bars" id="chartMois"></div></div>
+            <div class="stat-card"><h3>Top prix de vente</h3><div id="topPrix"></div></div>
+            <div class="stat-card"><h3>Dernières ventes</h3><div id="dernieresVentes"></div></div>
+        </div>
+    </main>
+
+    <!-- ===== MODALE FORMULAIRE ===== -->
+    <div id="modale" class="modale">
+        <div class="modale-contenu">
+            <div class="modale-header">
+                <h2 id="titreModale">Nouvelle création</h2>
+                <span class="fermer" onclick="fermerFormulaire()">&times;</span>
+            </div>
+            <form id="formCreation" onsubmit="sauvegarderCreation(event)">
+                <input type="hidden" id="creationId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nom de la peluche *</label>
+                        <input type="text" id="nom" required placeholder="Ex: Petit lapin rose">
+                    </div>
+                    <div class="form-group">
+                        <label>Statut *</label>
+                        <select id="statut" required>
+                            <option value="en-cours">🧵 En cours</option>
+                            <option value="en-vente">🛍️ En vente</option>
+                            <option value="vendu">✅ Vendu</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="3" placeholder="Taille, matière, détails..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Photo</label>
+                    <div class="photo-input-row">
+                        <input type="text" id="photoUrl" placeholder="URL de l'image" oninput="previewPhotoUrl()">
+                        <label class="file-label">📁 Upload<input type="file" id="photoFile" accept="image/*" onchange="previewPhoto(event)" style="display:none"></label>
+                    </div>
+                    <div id="previewContainer" class="preview-box"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Prix (€)</label><input type="number" id="prix" step="0.01" min="0" placeholder="0.00"></div>
+                    <div class="form-group"><label>Date de vente</label><input type="date" id="dateVente"></div>
+                </div>
+                <div class="form-group"><label>Lien Vinted</label><input type="url" id="lienVinted" placeholder="https://www.vinted.fr/..."></div>
+
+                <!-- Bloc Agnes -->
+                <div class="agnes-bloc">
+                    <div class="agnes-header">
+                        <span class="agnes-icon">✨</span>
+                        <div>
+                            <strong>Générer un fond avec Agnes</strong>
+                            <p class="agnes-aide">Ta peluche sera conservée, seul le fond est généré.</p>
+                        </div>
+                    </div>
+                    <input type="text" id="promptAgnes" class="agnes-input" placeholder="Ex: fond Halloween pastel, citrouilles mignonnes">
+                    <div class="agnes-actions">
+                        <button type="button" class="btn-agnes" onclick="genererFondAgnes(false)">🎨 Générer & Télécharger</button>
+                        <button type="button" class="btn-agnes btn-agnes-alt" onclick="genererFondAgnes(true)">🔄 Générer & Remplacer</button>
+                    </div>
+                    <div id="statutAgnes" class="agnes-statut"></div>
+                </div>
+
+                <div class="form-boutons">
+                    <button type="button" class="btn-secondary" onclick="fermerFormulaire()">Annuler</button>
+                    <button type="submit" class="btn-primary">💾 Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODALE DÉTAIL ===== -->
+    <div id="modaleDetail" class="modale">
+        <div class="modale-contenu modale-detail">
+            <div class="modale-header">
+                <h2 id="detailTitre">Détail</h2>
+                <span class="fermer" onclick="fermerDetail()">&times;</span>
+            </div>
+            <div id="detailContenu"></div>
+        </div>
+    </div>
+
+    <footer class="footer"><p>Fil et Fleur · Fait avec 🧶 et ❤️</p></footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        const CLE_STORAGE = 'creationsPeluches';
+        const CLE_DARK = 'atelierDarkMode';
+        const AGNES_API_URL = 'https://apihub.agnes-ai.com/v1/images/generations';
+        const AGNES_API_KEY = 'sk-A3uAU6syfD32yMffM54Bl1IARLmpfCBe4z5i0NcZXidfxlKN'; // ← Remplacer par ta clé API
+
+        let creations = [];
+        let photoActuelle = '';
+        let triBiblio = { cle: 'nom', sens: 1 };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            chargerCreations();
+            chargerDarkMode();
+            afficherCreations();
+            mettreAJourStats();
+            afficherStatsDetaillees();
+        });
+
+        function chargerCreations() {
+            const data = localStorage.getItem(CLE_STORAGE);
+            creations = data ? JSON.parse(data) : [];
+        }
+
+        function sauvegarderStorage() {
+            localStorage.setItem(CLE_STORAGE, JSON.stringify(creations));
+        }
+
+        function chargerDarkMode() {
+            if (localStorage.getItem(CLE_DARK) === '1') document.body.classList.add('dark');
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            localStorage.setItem(CLE_DARK, document.body.classList.contains('dark') ? '1' : '0');
+        }
+
+        function changerOnglet(nom) {
+            document.querySelectorAll('.onglet').forEach(o => o.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('onglet-' + nom).classList.add('active');
+            document.querySelector(`.nav-btn[data-tab="${nom}"]`).classList.add('active');
+            if (nom === 'bibliotheque') afficherBiblio();
+            if (nom === 'stats') afficherStatsDetaillees();
+        }
+
+        function getCreationsFiltrees() {
+            const recherche = document.getElementById('recherche').value.toLowerCase();
+            const filtreStatut = document.getElementById('filtreStatut').value;
+            return creations.filter(c => {
+                const matchRecherche = c.nom.toLowerCase().includes(recherche) || (c.description || '').toLowerCase().includes(recherche);
+                const matchStatut = filtreStatut === 'tous' || c.statut === filtreStatut;
+                return matchRecherche && matchStatut;
+            });
+        }
+
+        function afficherCreations() {
+            const galerie = document.getElementById('galerie');
+            const messageVide = document.getElementById('messageVide');
+            const liste = getCreationsFiltrees();
+            const ordre = { 'en-vente': 1, 'en-cours': 2, 'vendu': 3 };
+            liste.sort((a, b) => ordre[a.statut] - ordre[b.statut]);
+            galerie.innerHTML = '';
+            if (liste.length === 0) {
+                messageVide.style.display = creations.length === 0 ? 'block' : 'none';
+                if (creations.length > 0) galerie.innerHTML = '<p style="text-align:center;padding:60px;color:var(--text-muted);grid-column:1/-1;">Aucun résultat pour cette recherche.</p>';
+                return;
+            }
+            messageVide.style.display = 'none';
+            liste.forEach(c => galerie.appendChild(creerCarte(c)));
+        }
+
+        function creerCarte(c) {
+            const carte = document.createElement('div');
+            carte.className = 'carte';
+            carte.onclick = (e) => {
+                if (e.target.closest('button') || e.target.closest('a')) return;
+                ouvrirDetail(c.id);
+            };
+            const imageHtml = c.photo ? `<img src="${echapper(c.photo)}" alt="${echapper(c.nom)}" class="carte-image">` : `<div class="carte-image">🌸</div>`;
+            const badges = {
+                'en-vente': '<span class="badge badge-en-vente">En vente</span>',
+                'vendu': '<span class="badge badge-vendu">Vendu</span>',
+                'en-cours': '<span class="badge badge-en-cours">En cours</span>'
+            };
+            const prixHtml = c.prix ? `<span class="prix">${parseFloat(c.prix).toFixed(2)} €</span>` : '<span></span>';
+            const dateHtml = c.statut === 'vendu' && c.dateVente ? `<span class="date-vente">📅 ${formaterDate(c.dateVente)}</span>` : '';
+            carte.innerHTML = `
+                ${imageHtml}
+                <div class="carte-body">
+                    ${badges[c.statut]}
+                    <h3>${echapper(c.nom)}</h3>
+                    <p class="carte-desc">${echapper(c.description || 'Pas de description')}</p>
+                    <div class="carte-footer">${prixHtml}${dateHtml}</div>
+                </div>
+            `;
+            return carte;
+        }
+
+        function afficherBiblio() {
+            const tbody = document.getElementById('biblioBody');
+            const vide = document.getElementById('biblioVide');
+            const liste = getCreationsFiltrees();
+            liste.sort((a, b) => {
+                let va = a[triBiblio.cle] ?? '';
+                let vb = b[triBiblio.cle] ?? '';
+                if (triBiblio.cle === 'prix') { va = parseFloat(va) || 0; vb = parseFloat(vb) || 0; }
+                if (va < vb) return -1 * triBiblio.sens;
+                if (va > vb) return 1 * triBiblio.sens;
+                return 0;
+            });
+            tbody.innerHTML = '';
+            if (liste.length === 0) { vide.style.display = 'block'; return; }
+            vide.style.display = 'none';
+            liste.forEach(c => {
+                const tr = document.createElement('tr');
+                const badges = {
+                    'en-vente': '<span class="badge badge-en-vente">En vente</span>',
+                    'vendu': '<span class="badge badge-vendu">Vendu</span>',
+                    'en-cours': '<span class="badge badge-en-cours">En cours</span>'
+                };
+                const photo = c.photo ? `<img src="${echapper(c.photo)}" class="biblio-thumb">` : `<div class="biblio-thumb">🌸</div>`;
+                const prix = c.prix ? `${parseFloat(c.prix).toFixed(2)} €` : '—';
+                const date = c.dateVente ? formaterDate(c.dateVente) : '—';
+                tr.innerHTML = `
+                    <td>${photo}</td>
+                    <td><strong>${echapper(c.nom)}</strong></td>
+                    <td>${badges[c.statut]}</td>
+                    <td>${prix}</td>
+                    <td>${date}</td>
+                    <td>
+                        <div class="biblio-actions">
+                            <button onclick="ouvrirDetail(${c.id})">👁️</button>
+                            <button onclick="modifierCreation(${c.id})">✏️</button>
+                            <button onclick="supprimerCreation(${c.id})">🗑️</button>
+                            ${c.lienVinted ? `<a href="${echapper(c.lienVinted)}" target="_blank">🔗</a>` : ''}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function trierBiblio(cle) {
+            if (triBiblio.cle === cle) triBiblio.sens *= -1;
+            else { triBiblio.cle = cle; triBiblio.sens = 1; }
+            afficherBiblio();
+        }
+
+        function mettreAJourStats() {
+            document.getElementById('statTotal').textContent = creations.length;
+            document.getElementById('statEnVente').textContent = creations.filter(c => c.statut === 'en-vente').length;
+            const vendus = creations.filter(c => c.statut === 'vendu');
+            document.getElementById('statVendus').textContent = vendus.length;
+            const revenu = vendus.reduce((sum, c) => sum + (parseFloat(c.prix) || 0), 0);
+            document.getElementById('statRevenu').textContent = revenu.toFixed(2) + ' €';
+        }
+
+        function afficherStatsDetaillees() {
+            const statutDiv = document.getElementById('chartStatut');
+            const total = creations.length || 1;
+            const statuts = [
+                { cle: 'en-vente', label: 'En vente', cls: 'amber' },
+                { cle: 'en-cours', label: 'En cours', cls: 'blue' },
+                { cle: 'vendu', label: 'Vendus', cls: 'green' }
+            ];
+            statutDiv.innerHTML = statuts.map(s => {
+                const n = creations.filter(c => c.statut === s.cle).length;
+                const pct = Math.round(n / total * 100);
+                return `<div class="chart-bar"><span class="chart-bar-label">${s.label}</span><div class="chart-bar-fill ${s.cls}" style="width:${Math.max(pct, 3)}%">${n}</div></div>`;
+            }).join('');
+
+            const moisDiv = document.getElementById('chartMois');
+            const ventes = creations.filter(c => c.statut === 'vendu' && c.dateVente);
+            const parMois = {};
+            ventes.forEach(v => {
+                const d = new Date(v.dateVente);
+                const cle = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                parMois[cle] = (parMois[cle] || 0) + (parseFloat(v.prix) || 0);
+            });
+            const moisTries = Object.keys(parMois).sort().slice(-6);
+            const maxMois = Math.max(...Object.values(parMois), 1);
+            moisDiv.innerHTML = moisTries.length === 0
+                ? '<p style="color:var(--text-muted);font-size:0.9em;">Aucune vente enregistrée.</p>'
+                : moisTries.map(cle => {
+                    const [y, m] = cle.split('-');
+                    const label = new Date(y, m-1, 1).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
+                    const pct = Math.round(parMois[cle] / maxMois * 100);
+                    return `<div class="chart-bar"><span class="chart-bar-label">${label}</span><div class="chart-bar-fill pink" style="width:${Math.max(pct, 8)}%">${parMois[cle].toFixed(0)} €</div></div>`;
+                }).join('');
+
+            const topDiv = document.getElementById('topPrix');
+            const top = [...creations].filter(c => c.prix).sort((a,b) => parseFloat(b.prix) - parseFloat(a.prix)).slice(0, 5);
+            topDiv.innerHTML = top.length === 0 ? '<p style="color:var(--text-muted);font-size:0.9em;">Aucune création avec prix.</p>'
+                : top.map(c => `<div class="list-item"><strong>${echapper(c.nom)}</strong><span>${parseFloat(c.prix).toFixed(2)} €</span></div>`).join('');
+
+            const derniereDiv = document.getElementById('dernieresVentes');
+            const dernieres = creations.filter(c => c.statut === 'vendu' && c.dateVente).sort((a,b) => new Date(b.dateVente) - new Date(a.dateVente)).slice(0, 5);
+            derniereDiv.innerHTML = dernieres.length === 0 ? '<p style="color:var(--text-muted);font-size:0.9em;">Aucune vente enregistrée.</p>'
+                : dernieres.map(c => `<div class="list-item"><strong>${echapper(c.nom)}</strong><span>${formaterDate(c.dateVente)} · ${parseFloat(c.prix||0).toFixed(2)} €</span></div>`).join('');
+        }
+
+        function ouvrirFormulaire(creation = null) {
+            const previewContainer = document.getElementById('previewContainer');
+            document.getElementById('formCreation').reset();
+            previewContainer.innerHTML = '';
+            document.getElementById('statutAgnes').textContent = '';
+            photoActuelle = '';
+            if (creation) {
+                document.getElementById('titreModale').textContent = 'Modifier la création';
+                document.getElementById('creationId').value = creation.id;
+                document.getElementById('nom').value = creation.nom;
+                document.getElementById('description').value = creation.description || '';
+                document.getElementById('photoUrl').value = creation.photo && creation.photo.startsWith('http') ? creation.photo : '';
+                document.getElementById('statut').value = creation.statut;
+                document.getElementById('prix').value = creation.prix || '';
+                document.getElementById('lienVinted').value = creation.lienVinted || '';
+                document.getElementById('dateVente').value = creation.dateVente || '';
+                if (creation.photo) previewContainer.innerHTML = `<img src="${creation.photo}" alt="Aperçu">`;
+            } else {
+                document.getElementById('titreModale').textContent = 'Nouvelle création';
+                document.getElementById('creationId').value = '';
+            }
+            document.getElementById('modale').classList.add('actif');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fermerFormulaire() {
+            document.getElementById('modale').classList.remove('actif');
+            document.body.style.overflow = '';
+        }
+
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('modale')) fermerFormulaire();
+            if (event.target === document.getElementById('modaleDetail')) fermerDetail();
+        }
+
+        function previewPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                photoActuelle = e.target.result;
+                document.getElementById('previewContainer').innerHTML = `<img src="${photoActuelle}" alt="Aperçu">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function previewPhotoUrl() {
+            const url = document.getElementById('photoUrl').value.trim();
+            if (url) {
+                photoActuelle = '';
+                document.getElementById('previewContainer').innerHTML = `<img src="${url}" alt="Aperçu" onerror="this.style.display='none'">`;
+            }
+        }
+
+        function sauvegarderCreation(event) {
+            event.preventDefault();
+            const id = document.getElementById('creationId').value;
+            const photoUrl = document.getElementById('photoUrl').value.trim();
+            const creation = {
+                id: id ? parseInt(id) : Date.now(),
+                nom: document.getElementById('nom').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                photo: photoActuelle || photoUrl,
+                statut: document.getElementById('statut').value,
+                prix: document.getElementById('prix').value,
+                lienVinted: document.getElementById('lienVinted').value.trim(),
+                dateVente: document.getElementById('dateVente').value
+            };
+            if (id) {
+                const index = creations.findIndex(c => c.id === parseInt(id));
+                if (index !== -1) creations[index] = creation;
+            } else {
+                creations.push(creation);
+            }
+            sauvegarderStorage();
+            afficherCreations();
+            mettreAJourStats();
+            afficherStatsDetaillees();
+            fermerFormulaire();
+        }
+
+        function modifierCreation(id) {
+            const creation = creations.find(c => c.id === id);
+            if (creation) ouvrirFormulaire(creation);
+        }
+
+        function supprimerCreation(id) {
+            if (!confirm('Supprimer cette création ? Action définitive.')) return;
+            creations = creations.filter(c => c.id !== id);
+            sauvegarderStorage();
+            afficherCreations();
+            mettreAJourStats();
+            afficherStatsDetaillees();
+            if (document.getElementById('modaleDetail').classList.contains('actif')) fermerDetail();
+        }
+
+        function ouvrirDetail(id) {
+            const c = creations.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('detailTitre').textContent = c.nom;
+            const badges = {
+                'en-vente': '<span class="badge badge-en-vente">En vente</span>',
+                'vendu': '<span class="badge badge-vendu">Vendu</span>',
+                'en-cours': '<span class="badge badge-en-cours">En cours</span>'
+            };
+            const photo = c.photo ? `<img src="${echapper(c.photo)}" class="detail-image">` : `<div class="carte-image" style="height:300px;border-radius:8px;">🌸</div>`;
+            document.getElementById('detailContenu').innerHTML = `
+                ${photo}
+                <div style="margin-bottom:16px;">${badges[c.statut]}</div>
+                <div class="detail-info">
+                    <div class="detail-info-item"><label>Prix</label><span>${c.prix ? parseFloat(c.prix).toFixed(2) + ' €' : '—'}</span></div>
+                    <div class="detail-info-item"><label>Date de vente</label><span>${c.dateVente ? formaterDate(c.dateVente) : '—'}</span></div>
+                </div>
+                ${c.description ? `<div class="detail-description">${echapper(c.description)}</div>` : ''}
+                <div class="detail-actions">
+                    ${c.lienVinted ? `<a href="${echapper(c.lienVinted)}" target="_blank" class="btn-primary" style="text-decoration:none;">🔗 Voir sur Vinted</a>` : ''}
+                    <button class="btn-secondary" onclick="fermerDetail(); modifierCreation(${c.id})">✏️ Modifier</button>
+                    <button class="btn-secondary" onclick="supprimerCreation(${c.id})" style="color:var(--danger);">🗑️ Supprimer</button>
+                </div>
+            `;
+            document.getElementById('modaleDetail').classList.add('actif');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fermerDetail() {
+            document.getElementById('modaleDetail').classList.remove('actif');
+            document.body.style.overflow = '';
+        }
+
+        function exporterDonnees() {
+            if (creations.length === 0) { alert('Aucune donnée à exporter.'); return; }
+            const dataStr = JSON.stringify(creations, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const lien = document.createElement('a');
+            lien.href = url;
+            lien.download = `fil-et-fleur-${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(lien);
+            lien.click();
+            document.body.removeChild(lien);
+            URL.revokeObjectURL(url);
+        }
+
+        function importerDonnees(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!Array.isArray(data)) throw new Error('Format invalide');
+                    if (!confirm(`Importer ${data.length} création(s) ? Cela remplacera tes données actuelles.`)) {
+                        event.target.value = '';
+                        return;
+                    }
+                    creations = data;
+                    sauvegarderStorage();
+                    afficherCreations();
+                    mettreAJourStats();
+                    afficherStatsDetaillees();
+                    alert('✅ Import réussi !');
+                } catch (err) {
+                    alert('❌ Fichier invalide : ' + err.message);
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        async function genererFondAgnes(remplacerPhoto) {
+            const statutDiv = document.getElementById('statutAgnes');
+            const prompt = document.getElementById('promptAgnes').value.trim();
+            const nom = document.getElementById('nom').value.trim() || 'peluche';
+            let photoBase = photoActuelle || document.getElementById('photoUrl').value.trim();
+            if (!photoBase) { statutDiv.textContent = '⚠️ Ajoute d\'abord une photo de la peluche.'; statutDiv.style.color = 'var(--danger)'; return; }
+            if (!prompt) { statutDiv.textContent = '⚠️ Décris le fond souhaité.'; statutDiv.style.color = 'var(--danger)'; return; }
+            if (!AGNES_API_KEY || AGNES_API_KEY === 'YOUR_API_KEY') { statutDiv.textContent = '⚠️ Clé API Agnes non configurée (édite le fichier HTML).'; statutDiv.style.color = 'var(--danger)'; return; }
+            statutDiv.textContent = '⏳ Génération en cours... (10-30 s)';
+            statutDiv.style.color = 'var(--info)';
+            try {
+                const response = await fetch(AGNES_API_URL, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${AGNES_API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'agnes-image-2.0-flash',
+                        prompt: `Place this crochet plush on the following background: ${prompt}. Keep the plush exactly as in the input image, unchanged, realistic lighting, high quality, centered composition.`,
+                        size: '1024x1024',
+                        image: [photoBase],
+                        extra_body: { response_format: 'url' }
+                    })
+                });
+                if (!response.ok) {
+                    let msg = `Erreur HTTP ${response.status}`;
+                    try { const e = await response.json(); msg = e.error?.message || e.message || msg; } catch(_) {}
+                    throw new Error(msg);
+                }
+                const data = await response.json();
+                const img = data.data?.[0]?.url || data.data?.[0]?.b64_json;
+                if (!img) throw new Error('Pas d\'image renvoyée.');
+                const finalUrl = img.startsWith('http') ? img : 'data:image/png;base64,' + img;
+                const nomFichier = `peluche-${nom.replace(/[^a-z0-9]/gi, '-')}-fond-${Date.now()}.png`;
+                telechargerImage(finalUrl, nomFichier);
+                statutDiv.textContent = `✅ Image générée et téléchargée : ${nomFichier}`;
+                statutDiv.style.color = 'var(--success)';
+                if (remplacerPhoto) {
+                    if (finalUrl.startsWith('http')) { document.getElementById('photoUrl').value = finalUrl; photoActuelle = ''; }
+                    else { photoActuelle = finalUrl; document.getElementById('photoUrl').value = ''; }
+                    document.getElementById('previewContainer').innerHTML = `<img src="${finalUrl}" alt="Aperçu">`;
+                    statutDiv.textContent += ' — Photo mise à jour.';
+                }
+            } catch (err) {
+                console.error(err);
+                statutDiv.textContent = `❌ ${err.message}`;
+                statutDiv.style.color = 'var(--danger)';
+            }
+        }
+
+        function telechargerImage(url, nomFichier) {
+            const lien = document.createElement('a');
+            lien.href = url;
+            lien.download = nomFichier;
+            document.body.appendChild(lien);
+            lien.click();
+            document.body.removeChild(lien);
+        }
+
+        function echapper(texte) {
+            const div = document.createElement('div');
+            div.textContent = texte || '';
+            return div.innerHTML;
+        }
+
+        function formaterDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+    </script>
+</body>
+</html>

@@ -8,7 +8,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -24,7 +24,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        window.FB = { db, auth, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+        window.FB = { db, auth, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, increment, signInWithEmailAndPassword, signOut, onAuthStateChanged };
         window.dispatchEvent(new Event('firebaseReady'));
     </script>
 
@@ -44,6 +44,8 @@
             --text-muted: #a8a29e; --text-light: #57534e; --border: #2a2a2a; --primary-soft: #2a1a23;
         }
         body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; transition: background 0.3s, color 0.3s; }
+        
+        /* ===== HEADER & BANNIÈRE ===== */
         .topbar { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
         .topbar-inner { max-width: 1280px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
         .brand { display: flex; align-items: center; gap: 12px; }
@@ -58,15 +60,19 @@
         .topbar-actions { display: flex; gap: 8px; align-items: center; }
         .icon-btn { background: var(--bg-soft); border: none; padding: 10px 12px; border-radius: 8px; font-size: 1.1em; cursor: pointer; transition: background 0.2s; }
         .icon-btn:hover { background: var(--border); }
+
+        /* Bannière d'accueil */
+        .hero { background: linear-gradient(135deg, var(--primary-soft), var(--surface)); padding: 60px 24px; text-align: center; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
+        .hero h2 { font-size: 2.2em; color: var(--primary); margin-bottom: 12px; }
+        .hero p { font-size: 1.1em; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
         
-        /* La barre KPI est cachée par défaut, et s'affichera en JS */
         .kpi-bar { max-width: 1280px; margin: 24px auto; padding: 0 24px; display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
-        
         .kpi { background: var(--surface); padding: 20px 24px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.2s; }
         .kpi:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
         .kpi-value { display: block; font-size: 2em; font-weight: 700; color: var(--text); letter-spacing: -0.03em; line-height: 1.1; }
         .kpi-label { display: block; font-size: 0.85em; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
         .kpi-accent .kpi-value { color: var(--primary); }
+        
         .toolbar { max-width: 1280px; margin: 0 auto 24px; padding: 0 24px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
         .toolbar-left { display: flex; gap: 12px; flex: 1; min-width: 280px; }
         .search, .select { padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-size: 0.95em; font-family: var(--font); transition: border-color 0.2s, box-shadow 0.2s; }
@@ -77,11 +83,13 @@
         .btn-primary:active { transform: scale(0.98); }
         .btn-secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); padding: 10px 20px; border-radius: var(--radius-sm); font-size: 0.95em; font-weight: 500; cursor: pointer; font-family: var(--font); transition: background 0.2s; }
         .btn-secondary:hover { background: var(--border); }
+        
         .onglet { display: none; animation: fadeIn 0.3s; }
         .onglet.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        
         .galerie { max-width: 1280px; margin: 0 auto; padding: 0 24px 40px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .carte { background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.25s, box-shadow 0.25s; display: flex; flex-direction: column; cursor: pointer; }
+        .carte { background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.25s, box-shadow 0.25s; display: flex; flex-direction: column; cursor: pointer; position: relative; }
         .carte:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
         .carte-image { width: 100%; height: 240px; object-fit: cover; background: linear-gradient(135deg, var(--primary-soft), var(--bg-soft)); display: flex; align-items: center; justify-content: center; font-size: 4em; color: var(--text-light); }
         .carte-body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
@@ -92,6 +100,12 @@
         .carte-desc { font-size: 0.85em; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
         .carte-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
         .prix { font-weight: 700; font-size: 1.1em; color: var(--primary); } .date-vente { font-size: 0.75em; color: var(--text-light); }
+        
+        /* Bouton J'aime sur la carte */
+        .like-btn-card { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.9); border: none; border-radius: 20px; padding: 6px 12px; font-size: 0.9em; font-weight: 600; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: var(--shadow-sm); transition: all 0.2s; z-index: 10; }
+        .like-btn-card:hover { transform: scale(1.05); background: white; }
+        .like-btn-card.liked { color: var(--primary); }
+
         .biblio-wrapper { max-width: 1280px; margin: 0 auto 40px; padding: 0 24px; }
         .biblio-table { width: 100%; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); border-collapse: separate; border-spacing: 0; overflow: hidden; box-shadow: var(--shadow-sm); }
         .biblio-table th { background: var(--bg-soft); padding: 14px 16px; text-align: left; font-size: 0.8em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--border); }
@@ -102,6 +116,7 @@
         .biblio-actions { display: flex; gap: 6px; }
         .biblio-actions button, .biblio-actions a { padding: 6px 10px; border: 1px solid var(--border); background: var(--surface); border-radius: 6px; font-size: 0.8em; cursor: pointer; text-decoration: none; color: var(--text); transition: all 0.2s; font-family: var(--font); }
         .biblio-actions button:hover, .biblio-actions a:hover { border-color: var(--primary); color: var(--primary); }
+        
         .stats-grid { max-width: 1280px; margin: 0 auto 40px; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         .stat-card { background: var(--surface); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
         .stat-card h3 { font-size: 0.95em; font-weight: 600; color: var(--text-muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -112,8 +127,10 @@
         .chart-bar-fill.pink { background: linear-gradient(90deg, #ec4899, #be185d); } .chart-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #1d4ed8); } .chart-bar-fill.green { background: linear-gradient(90deg, #10b981, #047857); } .chart-bar-fill.amber { background: linear-gradient(90deg, #f59e0b, #b45309); }
         .list-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9em; }
         .list-item:last-child { border-bottom: none; } .list-item strong { color: var(--text); } .list-item span { color: var(--text-muted); }
+        
         .empty-state { text-align: center; padding: 80px 20px; color: var(--text-muted); max-width: 500px; margin: 0 auto; }
         .empty-icon { font-size: 4em; margin-bottom: 16px; opacity: 0.5; } .empty-state h3 { font-size: 1.3em; color: var(--text); margin-bottom: 8px; } .empty-state p { margin-bottom: 20px; }
+        
         .modale { display: none; position: fixed; z-index: 1000; inset: 0; background: rgba(0,0,0,0.5); overflow-y: auto; padding: 20px; backdrop-filter: blur(4px); }
         .modale.actif { display: flex; align-items: flex-start; justify-content: center; }
         .modale-contenu { background: var(--surface); border-radius: var(--radius); max-width: 640px; width: 100%; margin: 20px auto; box-shadow: var(--shadow-lg); overflow: hidden; }
@@ -132,6 +149,7 @@
         .file-label:hover { background: var(--border); color: var(--primary); }
         .preview-box { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
         .preview-box img { width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+        
         #detailContenu { padding: 24px; }
         .detail-galerie { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .detail-image { width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-sm); background: var(--bg-soft); }
@@ -140,7 +158,13 @@
         .detail-info-item label { display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
         .detail-info-item span { font-weight: 600; color: var(--text); }
         .detail-description { padding: 16px; background: var(--bg-soft); border-radius: var(--radius-sm); line-height: 1.6; color: var(--text); margin-bottom: 20px; }
-        .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+        /* Bouton J'aime dans le détail */
+        .like-btn-detail { background: var(--bg-soft); border: 1px solid var(--border); padding: 10px 16px; border-radius: var(--radius-sm); font-size: 1em; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; color: var(--text); }
+        .like-btn-detail:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
+        .like-btn-detail.liked { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
+
         .form-boutons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
         .footer { text-align: center; padding: 40px 20px 30px; color: var(--text-muted); font-size: 0.9em; }
         .login-box { display: none; max-width: 400px; margin: 100px auto; padding: 30px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-lg); }
@@ -149,7 +173,7 @@
             .topbar-inner { padding: 12px 16px; } .nav { order: 3; width: 100%; justify-content: center; overflow-x: auto; } .nav-btn { padding: 8px 12px; font-size: 0.85em; white-space: nowrap; }
             .kpi-bar, .toolbar, .galerie, .biblio-wrapper, .stats-grid { padding-left: 16px; padding-right: 16px; } .kpi-value { font-size: 1.6em; } .toolbar { flex-direction: column; align-items: stretch; } .toolbar-left { flex-direction: column; }
             .search, .select { width: 100%; } .form-row { grid-template-columns: 1fr; } .biblio-table { font-size: 0.85em; } .biblio-table th, .biblio-table td { padding: 8px; }
-            .biblio-table th:nth-child(4), .biblio-table td:nth-child(4) { display: none; } .detail-info { grid-template-columns: 1fr; }
+            .biblio-table th:nth-child(4), .biblio-table td:nth-child(4) { display: none; } .detail-info { grid-template-columns: 1fr; } .hero { padding: 40px 20px; } .hero h2 { font-size: 1.8em; }
         }
     </style>
 </head>
@@ -165,9 +189,8 @@
             </div>
             <nav class="nav">
                 <button class="nav-btn active" data-tab="galerie" onclick="changerOnglet('galerie')">🖼️ Galerie</button>
-                <!-- La bibliothèque est cachée pour le public avec l'ID et le style -->
                 <button id="navBiblio" class="nav-btn" style="display:none;" data-tab="bibliotheque" onclick="changerOnglet('bibliotheque')">📚 Bibliothèque</button>
-                <button class="nav-btn" data-tab="stats" onclick="changerOnglet('stats')">📊 Statistiques</button>
+                <button id="navStats" class="nav-btn" style="display:none;" data-tab="stats" onclick="changerOnglet('stats')">📊 Statistiques</button>
             </nav>
             <div class="topbar-actions">
                 <button class="icon-btn" onclick="toggleDarkMode()" title="Mode sombre">🌙</button>
@@ -189,13 +212,18 @@
     </div>
 
     <div id="mainContent" style="display:none;">
-        <!-- J'ai ajouté l'id "adminStatsBar" ici -->
+        <section class="hero">
+            <h2>Bienvenue chez Fil et Fleur</h2>
+            <p>Des peluches uniques, faites main avec amour et passion. Chaque création est une pièce originale.</p>
+        </section>
+
         <section class="kpi-bar" id="adminStatsBar">
             <div class="kpi"><span class="kpi-value" id="statTotal">0</span><span class="kpi-label">Créations</span></div>
             <div class="kpi"><span class="kpi-value" id="statEnVente">0</span><span class="kpi-label">En vente</span></div>
             <div class="kpi"><span class="kpi-value" id="statVendus">0</span><span class="kpi-label">Vendus</span></div>
             <div class="kpi kpi-accent"><span class="kpi-value" id="statRevenu">0 €</span><span class="kpi-label">Chiffre d'affaires</span></div>
         </section>
+        
         <section class="toolbar">
             <div class="toolbar-left">
                 <input type="text" id="recherche" class="search" placeholder="🔍 Rechercher une création..." oninput="afficherCreations(); afficherBiblio();">
@@ -204,10 +232,12 @@
                 </select>
             </div>
         </section>
+        
         <main id="onglet-galerie" class="onglet active">
             <section id="galerie" class="galerie"></section>
             <div id="messageVide" class="empty-state" style="display:none;"><div class="empty-icon">🌸</div><h3>Aucune création</h3></div>
         </main>
+        
         <main id="onglet-bibliotheque" class="onglet">
             <div class="biblio-wrapper">
                 <table class="biblio-table">
@@ -216,6 +246,7 @@
                 </table>
             </div>
         </main>
+        
         <main id="onglet-stats" class="onglet">
             <div class="stats-grid">
                 <div class="stat-card"><h3>Répartition par statut</h3><div class="chart-bars" id="chartStatut"></div></div>
@@ -266,12 +297,16 @@
         let photosActuelles = [];
         let triBiblio = { cle: 'nom', sens: 1 };
         let isAdmin = false;
+        
+        // Ton lien Instagram (à modifier ici si besoin)
+        const MON_INSTAGRAM = "https://instagram.com/";
 
         window.addEventListener('firebaseReady', () => {
             const { auth, onAuthStateChanged } = window.FB;
             onAuthStateChanged(auth, (user) => {
                 const statsBar = document.getElementById('adminStatsBar');
                 const biblioBtn = document.getElementById('navBiblio');
+                const statsBtn = document.getElementById('navStats');
                 
                 if (user) {
                     isAdmin = true;
@@ -280,9 +315,9 @@
                     document.getElementById('adminActions').style.display = 'flex';
                     document.getElementById('loginBtn').style.display = 'none';
                     
-                    // On affiche les stats et l'onglet bibliothèque pour l'admin
                     if (statsBar) statsBar.style.display = 'grid';
                     if (biblioBtn) biblioBtn.style.display = 'block';
+                    if (statsBtn) statsBtn.style.display = 'block';
                     
                     chargerCreations();
                 } else {
@@ -291,13 +326,11 @@
                     document.getElementById('adminActions').style.display = 'none';
                     document.getElementById('loginBtn').style.display = 'inline-flex';
                     
-                    // On cache les stats et l'onglet bibliothèque pour le public
                     if (statsBar) statsBar.style.display = 'none';
                     if (biblioBtn) biblioBtn.style.display = 'none';
+                    if (statsBtn) statsBtn.style.display = 'none';
                     
-                    // Si on était sur la page bibliothèque en se déconnectant, on renvoie à la galerie
                     changerOnglet('galerie');
-                    
                     chargerCreations(); 
                 }
             });
@@ -382,7 +415,7 @@
             const carte = document.createElement('div');
             carte.className = 'carte';
             carte.onclick = (e) => {
-                if (e.target.closest('button') || e.target.closest('a')) return;
+                if (e.target.closest('.like-btn-card') || e.target.closest('button')) return;
                 ouvrirDetail(c.id);
             };
             const photo = c.photos && c.photos.length > 0 ? c.photos[0] : null;
@@ -390,8 +423,45 @@
             const badges = { 'en-vente': '<span class="badge badge-en-vente">En vente</span>', 'vendu': '<span class="badge badge-vendu">Vendu</span>', 'en-cours': '<span class="badge badge-en-cours">En cours</span>' };
             const prixHtml = c.prix ? `<span class="prix">${parseFloat(c.prix).toFixed(2)} €</span>` : '<span></span>';
             const dateHtml = c.statut === 'vendu' && c.dateVente ? `<span class="date-vente">📅 ${formaterDate(c.dateVente)}</span>` : '';
-            carte.innerHTML = `${imageHtml}<div class="carte-body">${badges[c.statut]}<h3>${c.nom}</h3><p class="carte-desc">${c.description || 'Pas de description'}</p><div class="carte-footer">${prixHtml}${dateHtml}</div></div>`;
+            
+            const nbLikes = c.likes || 0;
+            const heartIcon = nbLikes > 0 ? '❤️' : '🤍';
+            const likeHtml = `<button class="like-btn-card" onclick="liker('${c.id}', event)">${heartIcon} ${nbLikes}</button>`;
+
+            carte.innerHTML = `${likeHtml}${imageHtml}<div class="carte-body">${badges[c.statut]}<h3>${c.nom}</h3><p class="carte-desc">${c.description || 'Pas de description'}</p><div class="carte-footer">${prixHtml}${dateHtml}</div></div>`;
             return carte;
+        }
+
+        // Fonction pour liker
+        async function liker(id, event) {
+            if (event) event.stopPropagation(); // Évite d'ouvrir la fiche détail
+            const { db, doc, updateDoc, increment } = window.FB;
+            const creation = creations.find(c => c.id === id);
+            if (!creation) return;
+
+            // Animation visuelle temporaire
+            const btn = event ? event.target.closest('.like-btn-card') : document.getElementById('likeBtnDetail');
+            if (btn) {
+                btn.style.transform = 'scale(1.2)';
+                setTimeout(() => btn.style.transform = 'scale(1)', 200);
+            }
+
+            try {
+                const ref = doc(db, "creations", id);
+                await updateDoc(ref, { likes: increment(1) });
+                
+                // Mise à jour locale
+                creation.likes = (creation.likes || 0) + 1;
+                afficherCreations(); // Rafraîchit la grille
+                
+                // Si la modale détail est ouverte, on met à jour son bouton
+                const detailBtn = document.getElementById('likeBtnDetail');
+                if (detailBtn && detailBtn.dataset.id === id) {
+                    detailBtn.innerHTML = `❤️ J'aime (${creation.likes})`;
+                }
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         function afficherBiblio() {
@@ -413,7 +483,8 @@
                 const img = photo ? `<img src="${photo}" class="biblio-thumb">` : `<div class="biblio-thumb">🌸</div>`;
                 const prix = c.prix ? `${parseFloat(c.prix).toFixed(2)} €` : '—';
                 const date = c.dateVente ? formaterDate(c.dateVente) : '—';
-                tr.innerHTML = `<td>${img}</td><td><strong>${c.nom}</strong></td><td>${c.statut}</td><td>${prix}</td><td>${date}</td><td><div class="biblio-actions"><button onclick="ouvrirDetail('${c.id}')">👁️</button><button onclick="modifierCreation('${c.id}')">✏️</button><button onclick="supprimerCreation('${c.id}')">🗑️</button></div></td>`;
+                const likes = c.likes ? `❤️ ${c.likes}` : '—';
+                tr.innerHTML = `<td>${img}</td><td><strong>${c.nom}</strong></td><td>${c.statut}</td><td>${prix}</td><td>${likes}</td><td>${date}</td><td><div class="biblio-actions"><button onclick="ouvrirDetail('${c.id}')">👁️</button><button onclick="modifierCreation('${c.id}')">✏️</button><button onclick="supprimerCreation('${c.id}')">🗑️</button></div></td>`;
                 tbody.appendChild(tr);
             });
         }
@@ -477,7 +548,6 @@
         async function previewPhotos(event) {
             const files = event.target.files;
             const statusText = document.getElementById('uploadStatus');
-            
             for (let i = 0; i < files.length; i++) {
                 statusText.textContent = `Compression de la photo ${i+1}/${files.length}...`;
                 const compressedBase64 = await compresserImage(files[i]);
@@ -526,7 +596,10 @@
             };
             const { db, collection, addDoc, doc, updateDoc } = window.FB;
             if (id) { await updateDoc(doc(db, "creations", id), data); }
-            else { await addDoc(collection(db, "creations"), data); }
+            else { 
+                data.likes = 0; // Initialise les likes à 0 pour les nouvelles créations
+                await addDoc(collection(db, "creations"), data); 
+            }
             fermerFormulaire();
             chargerCreations();
         }
@@ -548,6 +621,10 @@
             if (!c) return;
             document.getElementById('detailTitre').textContent = c.nom;
             let photosHtml = c.photos && c.photos.length > 0 ? `<div class="detail-galerie">${c.photos.map(p => `<img src="${p}" class="detail-image">`).join('')}</div>` : `<div class="carte-image" style="height:300px;">🌸</div>`;
+            
+            const nbLikes = c.likes || 0;
+            const heartIcon = nbLikes > 0 ? '❤️' : '🤍';
+
             document.getElementById('detailContenu').innerHTML = `
                 ${photosHtml}
                 <div class="detail-info">
@@ -557,6 +634,12 @@
                 ${c.description ? `<div class="detail-description">${c.description}</div>` : ''}
                 <div class="detail-actions">
                     ${c.lienVinted ? `<a href="${c.lienVinted}" target="_blank" class="btn-primary" style="text-decoration:none;">🔗 Vinted</a>` : ''}
+                    <a href="${MON_INSTAGRAM}" target="_blank" class="btn-secondary" style="text-decoration:none;">💌 Me contacter</a>
+                    
+                    <button id="likeBtnDetail" class="like-btn-detail ${nbLikes > 0 ? 'liked' : ''}" data-id="${c.id}" onclick="liker('${c.id}', event)">
+                        ${heartIcon} J'aime (${nbLikes})
+                    </button>
+
                     ${isAdmin ? `<button class="btn-secondary" onclick="fermerDetail(); modifierCreation('${c.id}')">✏️ Modifier</button><button class="btn-secondary" onclick="supprimerCreation('${c.id}')" style="color:var(--danger);">🗑️ Supprimer</button>` : ''}
                 </div>
             `;

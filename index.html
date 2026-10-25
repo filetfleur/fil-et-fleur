@@ -72,15 +72,20 @@
         .kpi-label { display: block; font-size: 0.85em; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
         .kpi-accent .kpi-value { color: var(--primary); }
         
+        /* === BARRE DE FILTRES === */
         .toolbar { max-width: 1280px; margin: 0 auto 24px; padding: 0 24px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-        .toolbar-left { display: flex; gap: 12px; flex: 1; min-width: 280px; }
-        .search, .select { padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-size: 0.95em; font-family: var(--font); transition: border-color 0.2s, box-shadow 0.2s; }
-        .search { flex: 1; min-width: 200px; }
-        .search:focus, .select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: var(--radius-sm); font-size: 0.95em; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s, transform 0.1s; font-family: var(--font); }
+        .filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-btn { background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 0.9em; font-weight: 500; color: var(--text); cursor: pointer; transition: all 0.2s; white-space: nowrap; font-family: var(--font); }
+        .filter-btn:hover { background: var(--bg-soft); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: 600; }
+        
+        .search-bar { flex: 1; min-width: 200px; max-width: 300px; }
+        .search { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 20px; background: var(--surface); color: var(--text); font-size: 0.9em; font-family: var(--font); }
+        .search:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+        
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: var(--radius-sm); font-size: 0.95em; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; font-family: var(--font); }
         .btn-primary:hover { background: var(--primary-hover); }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); padding: 10px 20px; border-radius: var(--radius-sm); font-size: 0.95em; font-weight: 500; cursor: pointer; font-family: var(--font); transition: background 0.2s; }
+        .btn-secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); padding: 10px 20px; border-radius: var(--radius-sm); font-size: 0.95em; font-weight: 500; cursor: pointer; font-family: var(--font); }
         .btn-secondary:hover { background: var(--border); }
         
         .onglet { display: none; animation: fadeIn 0.3s; }
@@ -92,22 +97,25 @@
         .carte:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
         .carte-image { width: 100%; height: 240px; object-fit: cover; background: linear-gradient(135deg, var(--primary-soft), var(--bg-soft)); display: flex; align-items: center; justify-content: center; font-size: 4em; color: var(--text-light); }
         .carte-body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        
+        /* Badges de statut */
         .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; align-self: flex-start; }
-        .badge-en-vente { background: #fef3c7; color: #92400e; } .badge-vendu { background: #d1fae5; color: #065f46; } .badge-en-cours { background: #dbeafe; color: #1e40af; }
-        body.dark .badge-en-vente { background: #422006; color: #fbbf24; } body.dark .badge-vendu { background: #064e3b; color: #6ee7b7; } body.dark .badge-en-cours { background: #1e3a8a; color: #93c5fd; }
+        .badge-en-vente { background: #fef3c7; color: #92400e; } 
+        .badge-vendu { background: #d1fae5; color: #065f46; } 
+        .badge-en-cours { background: #dbeafe; color: #1e40af; }
+        .badge-sur-commande { background: #fce7f3; color: #9d174d; }
+        
+        body.dark .badge-en-vente { background: #422006; color: #fbbf24; } 
+        body.dark .badge-vendu { background: #064e3b; color: #6ee7b7; } 
+        body.dark .badge-en-cours { background: #1e3a8a; color: #93c5fd; }
+        body.dark .badge-sur-commande { background: #4c0519; color: #fbcfe8; }
+        
         .carte-body h3 { font-size: 1.05em; font-weight: 600; color: var(--text); line-height: 1.3; }
         .carte-desc { font-size: 0.85em; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
         .carte-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
         .prix { font-weight: 700; font-size: 1.1em; color: var(--primary); } .date-vente { font-size: 0.75em; color: var(--text-light); }
         
-        .like-btn-card { 
-            position: absolute; top: 12px; right: 12px; 
-            background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.05); 
-            border-radius: 20px; padding: 6px 14px; font-size: 0.95em; font-weight: 600; 
-            color: var(--text); cursor: pointer; display: flex; align-items: center; 
-            justify-content: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-            transition: all 0.2s; z-index: 10; min-width: 65px; font-family: var(--font);
-        }
+        .like-btn-card { position: absolute; top: 12px; right: 12px; background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.05); border-radius: 20px; padding: 6px 14px; font-size: 0.95em; font-weight: 600; color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.2s; z-index: 10; min-width: 65px; font-family: var(--font); }
         .like-btn-card:hover { transform: scale(1.05); background: white; }
         .like-btn-card.liked { color: var(--primary); }
 
@@ -190,8 +198,11 @@
         .login-box.actif { display: block; } .login-box h2 { margin-bottom: 20px; color: var(--primary); }
         @media (max-width: 768px) {
             .topbar-inner { padding: 12px 16px; } .nav { order: 3; width: 100%; justify-content: center; overflow-x: auto; } .nav-btn { padding: 8px 12px; font-size: 0.85em; white-space: nowrap; }
-            .kpi-bar, .toolbar, .galerie, .biblio-wrapper, .stats-grid { padding-left: 16px; padding-right: 16px; } .kpi-value { font-size: 1.6em; } .toolbar { flex-direction: column; align-items: stretch; } .toolbar-left { flex-direction: column; }
-            .search, .select { width: 100%; } .form-row { grid-template-columns: 1fr; } .biblio-table { font-size: 0.85em; } .biblio-table th, .biblio-table td { padding: 8px; }
+            .kpi-bar, .toolbar, .galerie, .biblio-wrapper, .stats-grid { padding-left: 16px; padding-right: 16px; } .kpi-value { font-size: 1.6em; } 
+            .toolbar { flex-direction: column; align-items: stretch; } 
+            .filter-bar { justify-content: flex-start; padding-bottom: 10px; }
+            .search-bar { max-width: 100%; }
+            .form-row { grid-template-columns: 1fr; } .biblio-table { font-size: 0.85em; } .biblio-table th, .biblio-table td { padding: 8px; }
             .biblio-table th:nth-child(4), .biblio-table td:nth-child(4) { display: none; } .detail-info { grid-template-columns: 1fr; } .hero { padding: 40px 20px; } .hero h2 { font-size: 1.8em; }
             .social-buttons a { min-width: 100%; }
         }
@@ -245,11 +256,14 @@
         </section>
         
         <section class="toolbar">
-            <div class="toolbar-left">
-                <input type="text" id="recherche" class="search" placeholder="🔍 Rechercher une création..." oninput="afficherCreations(); afficherBiblio();">
-                <select id="filtreStatut" class="select" onchange="afficherCreations(); afficherBiblio();">
-                    <option value="tous">Tous les statuts</option><option value="en-vente">En vente</option><option value="vendu">Vendus</option><option value="en-cours">En cours</option>
-                </select>
+            <div class="filter-bar" id="filterBar">
+                <button class="filter-btn active" data-filter="tous">Tout voir</button>
+                <button class="filter-btn" data-filter="en-vente">🛍️ En vente</button>
+                <button class="filter-btn" data-filter="sur-commande">🧶 Sur commande</button>
+                <button class="filter-btn" data-filter="vendu">✅ Vendus</button>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="recherche" class="search" placeholder="🔍 Rechercher..." oninput="afficherCreations(); afficherBiblio();">
             </div>
         </section>
         
@@ -284,7 +298,14 @@
                 <input type="hidden" id="creationId">
                 <div class="form-row">
                     <div class="form-group"><label>Nom *</label><input type="text" id="nom" required></div>
-                    <div class="form-group"><label>Statut *</label><select id="statut" required><option value="en-cours">🧵 En cours</option><option value="en-vente">🛍️ En vente</option><option value="vendu">✅ Vendu</option></select></div>
+                    <div class="form-group"><label>Statut *</label>
+                        <select id="statut" required>
+                            <option value="en-cours">🧵 En cours</option>
+                            <option value="en-vente">🛍️ En vente</option>
+                            <option value="sur-commande">🧶 Sur commande</option>
+                            <option value="vendu">✅ Vendu</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group"><label>Description</label><textarea id="description" rows="3"></textarea></div>
                 <div class="form-group">
@@ -317,6 +338,7 @@
         let creations = [];
         let photosActuelles = [];
         let isAdmin = false;
+        let currentFilter = 'tous'; // Variable pour le filtre actif
         
         const MON_INSTAGRAM = "https://www.instagram.com/fil_et.fleur";
         const MON_TIKTOK = "https://www.tiktok.com/@fil_et_fleur";
@@ -408,12 +430,23 @@
             if (nom === 'stats') afficherStatsDetaillees();
         }
 
+        // === GESTION DES FILTRES ===
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                afficherCreations();
+                afficherBiblio();
+            });
+        });
+
         function getCreationsFiltrees() {
             const recherche = document.getElementById('recherche').value.toLowerCase();
-            const filtreStatut = document.getElementById('filtreStatut').value;
+            
             return creations.filter(c => {
                 const matchRecherche = c.nom.toLowerCase().includes(recherche) || (c.description || '').toLowerCase().includes(recherche);
-                const matchStatut = filtreStatut === 'tous' || c.statut === filtreStatut;
+                const matchStatut = currentFilter === 'tous' || c.statut === currentFilter;
                 return matchRecherche && matchStatut;
             });
         }
@@ -423,7 +456,6 @@
             const messageVide = document.getElementById('messageVide');
             const liste = getCreationsFiltrees();
             
-            // Tri basé sur l'ordre personnalisé
             liste.sort((a, b) => a.ordre - b.ordre);
             
             galerie.innerHTML = '';
@@ -444,7 +476,15 @@
             };
             const photo = c.photos && c.photos.length > 0 ? c.photos[0] : null;
             const imageHtml = photo ? `<img src="${photo}" class="carte-image">` : `<div class="carte-image">🌸</div>`;
-            const badges = { 'en-vente': '<span class="badge badge-en-vente">En vente</span>', 'vendu': '<span class="badge badge-vendu">Vendu</span>', 'en-cours': '<span class="badge badge-en-cours">En cours</span>' };
+            
+            // Ajout du badge "Sur commande"
+            const badges = { 
+                'en-vente': '<span class="badge badge-en-vente">En vente</span>', 
+                'vendu': '<span class="badge badge-vendu">Vendu</span>', 
+                'en-cours': '<span class="badge badge-en-cours">En cours</span>',
+                'sur-commande': '<span class="badge badge-sur-commande">Sur commande</span>'
+            };
+            
             const prixHtml = c.prix ? `<span class="prix">${parseFloat(c.prix).toFixed(2)} €</span>` : '<span></span>';
             const dateHtml = c.statut === 'vendu' && c.dateVente ? `<span class="date-vente">📅 ${formaterDate(c.dateVente)}</span>` : '';
             
@@ -486,7 +526,7 @@
         function afficherBiblio() {
             if (!isAdmin) return;
             const tbody = document.getElementById('biblioBody');
-            const liste = [...creations].sort((a, b) => a.ordre - b.ordre);
+            const liste = getCreationsFiltrees().sort((a, b) => a.ordre - b.ordre);
             
             tbody.innerHTML = '';
             liste.forEach((c, index) => {
@@ -520,7 +560,6 @@
             });
         }
 
-        // === TRI INSTANTANÉ (SANS RECHARGEMENT) ===
         async function changerOrdre(id, direction) {
             let liste = [...creations].sort((a, b) => a.ordre - b.ordre);
             const index = liste.findIndex(c => c.id === id);
@@ -532,22 +571,18 @@
             else if (direction === 'down' && index < liste.length - 1) cibleIndex = index + 1;
             else return;
 
-            // 1. On échange les éléments
             const temp = liste[index];
             liste[index] = liste[cibleIndex];
             liste[cibleIndex] = temp;
 
-            // 2. On met à jour les numéros d'ordre dans la mémoire
             for (let i = 0; i < liste.length; i++) {
                 const item = creations.find(c => c.id === liste[i].id);
                 if (item) item.ordre = i + 1;
             }
 
-            // 3. On met à jour l'affichage instantanément
             afficherBiblio();
             afficherCreations();
 
-            // 4. On sauvegarde dans Firebase (en arrière-plan)
             const { db, doc, updateDoc } = window.FB;
             try {
                 for (let i = 0; i < liste.length; i++) {
@@ -555,7 +590,7 @@
                 }
             } catch (e) {
                 console.error("Erreur de tri :", e);
-                alert("Impossible de sauvegarder l'ordre. Vérifie ta connexion.");
+                alert("Impossible de sauvegarder l'ordre.");
             }
         }
 
@@ -572,7 +607,12 @@
             const statutDiv = document.getElementById('chartStatut');
             if(!statutDiv) return;
             const total = creations.length || 1;
-            const statuts = [{ cle: 'en-vente', label: 'En vente', cls: 'amber' }, { cle: 'en-cours', label: 'En cours', cls: 'blue' }, { cle: 'vendu', label: 'Vendus', cls: 'green' }];
+            const statuts = [
+                { cle: 'en-vente', label: 'En vente', cls: 'amber' }, 
+                { cle: 'sur-commande', label: 'Sur commande', cls: 'pink' },
+                { cle: 'en-cours', label: 'En cours', cls: 'blue' }, 
+                { cle: 'vendu', label: 'Vendus', cls: 'green' }
+            ];
             statutDiv.innerHTML = statuts.map(s => {
                 const n = creations.filter(c => c.statut === s.cle).length;
                 const pct = Math.round(n / total * 100);
@@ -600,7 +640,6 @@
             } else {
                 document.getElementById('titreModale').textContent = 'Nouvelle création';
                 document.getElementById('creationId').value = '';
-                // Nouvelle création : on la met à la fin (ordre 9999)
                 document.getElementById('ordre').value = 9999;
             }
             

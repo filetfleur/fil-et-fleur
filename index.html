@@ -101,28 +101,14 @@
         .carte-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
         .prix { font-weight: 700; font-size: 1.1em; color: var(--primary); } .date-vente { font-size: 0.75em; color: var(--text-light); }
         
-        /* Bouton J'aime corrigé */
+        /* Bouton J'aime */
         .like-btn-card { 
-            position: absolute; 
-            top: 12px; 
-            right: 12px; 
-            background: rgba(255, 255, 255, 0.95); 
-            border: 1px solid rgba(0,0,0,0.05); 
-            border-radius: 20px; 
-            padding: 6px 14px; 
-            font-size: 0.95em; 
-            font-weight: 600; 
-            color: var(--text); 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-            transition: all 0.2s; 
-            z-index: 10; 
-            min-width: 65px;
-            font-family: var(--font);
+            position: absolute; top: 12px; right: 12px; 
+            background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.05); 
+            border-radius: 20px; padding: 6px 14px; font-size: 0.95em; font-weight: 600; 
+            color: var(--text); cursor: pointer; display: flex; align-items: center; 
+            justify-content: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            transition: all 0.2s; z-index: 10; min-width: 65px; font-family: var(--font);
         }
         .like-btn-card:hover { transform: scale(1.05); background: white; }
         .like-btn-card.liked { color: var(--primary); }
@@ -185,6 +171,10 @@
         .like-btn-detail:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
         .like-btn-detail.liked { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
 
+        /* Boutons réseaux sociaux */
+        .social-buttons { display: flex; gap: 10px; margin-top: 10px; width: 100%; flex-wrap: wrap; }
+        .social-buttons a { flex: 1; min-width: 120px; text-align: center; justify-content: center; }
+
         .form-boutons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
         .footer { text-align: center; padding: 40px 20px 30px; color: var(--text-muted); font-size: 0.9em; }
         .login-box { display: none; max-width: 400px; margin: 100px auto; padding: 30px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-lg); }
@@ -194,6 +184,7 @@
             .kpi-bar, .toolbar, .galerie, .biblio-wrapper, .stats-grid { padding-left: 16px; padding-right: 16px; } .kpi-value { font-size: 1.6em; } .toolbar { flex-direction: column; align-items: stretch; } .toolbar-left { flex-direction: column; }
             .search, .select { width: 100%; } .form-row { grid-template-columns: 1fr; } .biblio-table { font-size: 0.85em; } .biblio-table th, .biblio-table td { padding: 8px; }
             .biblio-table th:nth-child(4), .biblio-table td:nth-child(4) { display: none; } .detail-info { grid-template-columns: 1fr; } .hero { padding: 40px 20px; } .hero h2 { font-size: 1.8em; }
+            .social-buttons a { min-width: 100%; }
         }
     </style>
 </head>
@@ -208,7 +199,6 @@
                 </div>
             </div>
             <nav class="nav">
-                <!-- Bouton Galerie corrigé avec un emoji fiable -->
                 <button class="nav-btn active" data-tab="galerie" onclick="changerOnglet('galerie')">🌸 Galerie</button>
                 <button id="navBiblio" class="nav-btn" style="display:none;" data-tab="bibliotheque" onclick="changerOnglet('bibliotheque')">📚 Bibliothèque</button>
                 <button id="navStats" class="nav-btn" style="display:none;" data-tab="stats" onclick="changerOnglet('stats')">📊 Statistiques</button>
@@ -319,8 +309,10 @@
         let triBiblio = { cle: 'nom', sens: 1 };
         let isAdmin = false;
         
-        // ⚠️ TON LIEN INSTAGRAM ICI ⚠️
-        const MON_INSTAGRAM = "https://instagram.com/"; 
+        // ⚠️ METS TES LIENS RÉSEAUX SOCIAUX ICI ⚠️
+        const MON_INSTAGRAM = "https://instagram.com/ton_compte";
+        const MON_TIKTOK = "https://tiktok.com/@ton_compte";
+        const MON_FACEBOOK = "https://facebook.com/ton_compte";
 
         window.addEventListener('firebaseReady', () => {
             const { auth, onAuthStateChanged } = window.FB;
@@ -651,14 +643,18 @@
                 <div class="detail-actions">
                     ${c.lienVinted ? `<a href="${c.lienVinted}" target="_blank" class="btn-primary" style="text-decoration:none;">🔗 Vinted</a>` : ''}
                     
-                    <!-- LE BOUTON ME CONTACTER EST ICI -->
-                    <a href="${MON_INSTAGRAM}" target="_blank" class="btn-secondary" style="text-decoration:none;">💌 Me contacter</a>
+                    <!-- RÉSEAUX SOCIAUX -->
+                    <div class="social-buttons">
+                        <a href="${MON_INSTAGRAM}" target="_blank" class="btn-secondary" style="text-decoration:none;">📸 Instagram</a>
+                        <a href="${MON_TIKTOK}" target="_blank" class="btn-secondary" style="text-decoration:none;">🎵 TikTok</a>
+                        <a href="${MON_FACEBOOK}" target="_blank" class="btn-secondary" style="text-decoration:none;">📘 Facebook</a>
+                    </div>
                     
-                    <button id="likeBtnDetail" class="like-btn-detail ${nbLikes > 0 ? 'liked' : ''}" data-id="${c.id}" onclick="liker('${c.id}', event)">
+                    <button id="likeBtnDetail" class="like-btn-detail ${nbLikes > 0 ? 'liked' : ''}" data-id="${c.id}" onclick="liker('${c.id}', event)" style="margin-top: 10px;">
                         ${heartIcon} J'aime (${nbLikes})
                     </button>
 
-                    ${isAdmin ? `<button class="btn-secondary" onclick="fermerDetail(); modifierCreation('${c.id}')">✏️ Modifier</button><button class="btn-secondary" onclick="supprimerCreation('${c.id}')" style="color:var(--danger);">🗑️ Supprimer</button>` : ''}
+                    ${isAdmin ? `<div style="width:100%; margin-top: 10px; display:flex; gap:10px;"><button class="btn-secondary" onclick="fermerDetail(); modifierCreation('${c.id}')" style="flex:1;">✏️ Modifier</button><button class="btn-secondary" onclick="supprimerCreation('${c.id}')" style="color:var(--danger); flex:1;">🗑️ Supprimer</button></div>` : ''}
                 </div>
             `;
             document.getElementById('modaleDetail').classList.add('actif');

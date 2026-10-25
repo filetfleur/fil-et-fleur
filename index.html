@@ -104,11 +104,13 @@
         .badge-vendu { background: #d1fae5; color: #065f46; } 
         .badge-en-cours { background: #dbeafe; color: #1e40af; }
         .badge-sur-commande { background: #fce7f3; color: #9d174d; }
+        .badge-ancien-modele { background: #f3e8ff; color: #6b21a8; } /* Violet pour les anciens modèles */
         
         body.dark .badge-en-vente { background: #422006; color: #fbbf24; } 
         body.dark .badge-vendu { background: #064e3b; color: #6ee7b7; } 
         body.dark .badge-en-cours { background: #1e3a8a; color: #93c5fd; }
         body.dark .badge-sur-commande { background: #4c0519; color: #fbcfe8; }
+        body.dark .badge-ancien-modele { background: #3b0764; color: #e9d5ff; }
         
         .carte-body h3 { font-size: 1.05em; font-weight: 600; color: var(--text); line-height: 1.3; }
         .carte-desc { font-size: 0.85em; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
@@ -142,7 +144,7 @@
         .chart-bar { display: flex; align-items: center; gap: 12px; }
         .chart-bar-label { min-width: 90px; font-size: 0.85em; color: var(--text); font-weight: 500; }
         .chart-bar-fill { height: 28px; border-radius: 6px; transition: width 0.5s; min-width: 4px; display: flex; align-items: center; padding-left: 10px; color: white; font-size: 0.8em; font-weight: 600; }
-        .chart-bar-fill.pink { background: linear-gradient(90deg, #ec4899, #be185d); } .chart-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #1d4ed8); } .chart-bar-fill.green { background: linear-gradient(90deg, #10b981, #047857); } .chart-bar-fill.amber { background: linear-gradient(90deg, #f59e0b, #b45309); }
+        .chart-bar-fill.pink { background: linear-gradient(90deg, #ec4899, #be185d); } .chart-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #1d4ed8); } .chart-bar-fill.green { background: linear-gradient(90deg, #10b981, #047857); } .chart-bar-fill.amber { background: linear-gradient(90deg, #f59e0b, #b45309); } .chart-bar-fill.purple { background: linear-gradient(90deg, #a855f7, #7e22ce); }
         .list-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9em; }
         .list-item:last-child { border-bottom: none; } .list-item strong { color: var(--text); } .list-item span { color: var(--text-muted); }
         
@@ -261,6 +263,7 @@
                 <button class="filter-btn" data-filter="en-vente">🛍️ En vente</button>
                 <button class="filter-btn" data-filter="sur-commande">🧶 Sur commande</button>
                 <button class="filter-btn" data-filter="vendu">✅ Vendus</button>
+                <button class="filter-btn" data-filter="ancien-modele">📜 Anciens modèles</button>
             </div>
             <div class="search-bar">
                 <input type="text" id="recherche" class="search" placeholder="🔍 Rechercher..." oninput="afficherCreations(); afficherBiblio();">
@@ -304,6 +307,7 @@
                             <option value="en-vente">🛍️ En vente</option>
                             <option value="sur-commande">🧶 Sur commande</option>
                             <option value="vendu">✅ Vendu</option>
+                            <option value="ancien-modele">📜 Ancien modèle (Cadeau/Don...)</option>
                         </select>
                     </div>
                 </div>
@@ -338,7 +342,7 @@
         let creations = [];
         let photosActuelles = [];
         let isAdmin = false;
-        let currentFilter = 'tous'; // Variable pour le filtre actif
+        let currentFilter = 'tous';
         
         const MON_INSTAGRAM = "https://www.instagram.com/fil_et.fleur";
         const MON_TIKTOK = "https://www.tiktok.com/@fil_et_fleur";
@@ -430,7 +434,6 @@
             if (nom === 'stats') afficherStatsDetaillees();
         }
 
-        // === GESTION DES FILTRES ===
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -477,12 +480,12 @@
             const photo = c.photos && c.photos.length > 0 ? c.photos[0] : null;
             const imageHtml = photo ? `<img src="${photo}" class="carte-image">` : `<div class="carte-image">🌸</div>`;
             
-            // Ajout du badge "Sur commande"
             const badges = { 
                 'en-vente': '<span class="badge badge-en-vente">En vente</span>', 
                 'vendu': '<span class="badge badge-vendu">Vendu</span>', 
                 'en-cours': '<span class="badge badge-en-cours">En cours</span>',
-                'sur-commande': '<span class="badge badge-sur-commande">Sur commande</span>'
+                'sur-commande': '<span class="badge badge-sur-commande">Sur commande</span>',
+                'ancien-modele': '<span class="badge badge-ancien-modele">Ancien modèle</span>'
             };
             
             const prixHtml = c.prix ? `<span class="prix">${parseFloat(c.prix).toFixed(2)} €</span>` : '<span></span>';
@@ -611,7 +614,8 @@
                 { cle: 'en-vente', label: 'En vente', cls: 'amber' }, 
                 { cle: 'sur-commande', label: 'Sur commande', cls: 'pink' },
                 { cle: 'en-cours', label: 'En cours', cls: 'blue' }, 
-                { cle: 'vendu', label: 'Vendus', cls: 'green' }
+                { cle: 'vendu', label: 'Vendus', cls: 'green' },
+                { cle: 'ancien-modele', label: 'Anciens', cls: 'purple' }
             ];
             statutDiv.innerHTML = statuts.map(s => {
                 const n = creations.filter(c => c.statut === s.cle).length;

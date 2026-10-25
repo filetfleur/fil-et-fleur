@@ -29,6 +29,7 @@
     </script>
 
     <style>
+        /* [Le CSS reste exactement le même que la fois précédente] */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg: #fafaf9; --bg-soft: #f5f5f4; --surface: #ffffff; --text: #1c1917;
@@ -45,7 +46,6 @@
         }
         body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; transition: background 0.3s, color 0.3s; }
         
-        /* ===== HEADER & BANNIÈRE ===== */
         .topbar { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
         .topbar-inner { max-width: 1280px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
         .brand { display: flex; align-items: center; gap: 12px; }
@@ -61,7 +61,6 @@
         .icon-btn { background: var(--bg-soft); border: none; padding: 10px 12px; border-radius: 8px; font-size: 1.1em; cursor: pointer; transition: background 0.2s; }
         .icon-btn:hover { background: var(--border); }
 
-        /* Bannière d'accueil */
         .hero { background: linear-gradient(135deg, var(--primary-soft), var(--surface)); padding: 60px 24px; text-align: center; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
         .hero h2 { font-size: 2.2em; color: var(--primary); margin-bottom: 12px; }
         .hero p { font-size: 1.1em; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
@@ -101,7 +100,6 @@
         .carte-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
         .prix { font-weight: 700; font-size: 1.1em; color: var(--primary); } .date-vente { font-size: 0.75em; color: var(--text-light); }
         
-        /* Bouton J'aime */
         .like-btn-card { 
             position: absolute; top: 12px; right: 12px; 
             background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.05); 
@@ -124,7 +122,6 @@
         .biblio-actions button { padding: 6px 10px; border: 1px solid var(--border); background: var(--surface); border-radius: 6px; font-size: 0.8em; cursor: pointer; color: var(--text); transition: all 0.2s; font-family: var(--font); }
         .biblio-actions button:hover { border-color: var(--primary); color: var(--primary); }
         
-        /* Boutons de tri (Texte) */
         .btn-sort { display: flex; gap: 4px; margin-right: 5px; }
         .btn-sort button { padding: 4px 8px; font-size: 0.75em; font-weight: 600; background: var(--bg-soft); border: 1px solid var(--border); color: var(--text); border-radius: 4px; cursor: pointer; transition: all 0.2s; }
         .btn-sort button:hover:not(:disabled) { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
@@ -161,7 +158,6 @@
         .file-label { background: var(--bg-soft); border: 1px solid var(--border); padding: 10px 16px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.9em; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap; transition: all 0.2s; }
         .file-label:hover { background: var(--border); color: var(--primary); }
         
-        /* GESTION DES PHOTOS DANS LE FORMULAIRE */
         .preview-box { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
         .photo-item { position: relative; width: 90px; height: 90px; border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; }
@@ -202,6 +198,7 @@
     </style>
 </head>
 <body>
+    <!-- [Le corps HTML reste exactement le même] -->
     <header class="topbar">
         <div class="topbar-inner">
             <div class="brand">
@@ -523,12 +520,11 @@
             });
         }
 
-        // === NOUVELLE FONCTION DE TRI RADICALE ===
+        // === NOUVELLE FONCTION DE TRI (Mise à jour une par une pour éviter les bugs) ===
         async function changerOrdre(id, direction) {
-            // On récupère la liste triée ACTUELLE
             let liste = [...creations].sort((a, b) => a.ordre - b.ordre);
-            
             const index = liste.findIndex(c => c.id === id);
+            
             if (index === -1) return;
             
             let cibleIndex;
@@ -536,22 +532,21 @@
             else if (direction === 'down' && index < liste.length - 1) cibleIndex = index + 1;
             else return;
 
-            // On échange les deux éléments dans le tableau
             const temp = liste[index];
             liste[index] = liste[cibleIndex];
             liste[cibleIndex] = temp;
 
-            // On réattribue des numéros propres (1, 2, 3...) à toute la liste
             const { db, doc, updateDoc } = window.FB;
-            const promises = [];
-            
-            for (let i = 0; i < liste.length; i++) {
-                liste[i].ordre = i + 1;
-                promises.push(updateDoc(doc(db, "creations", liste[i].id), { ordre: i + 1 }));
+            try {
+                // On boucle et on met à jour un par un (plus sûr)
+                for (let i = 0; i < liste.length; i++) {
+                    await updateDoc(doc(db, "creations", liste[i].id), { ordre: i + 1 });
+                }
+                chargerCreations();
+            } catch (e) {
+                console.error("Erreur de tri :", e);
+                alert("Impossible de sauvegarder l'ordre. Vérifie ta connexion internet.");
             }
-
-            await Promise.all(promises);
-            chargerCreations();
         }
 
         function mettreAJourStats() {
@@ -595,7 +590,6 @@
             } else {
                 document.getElementById('titreModale').textContent = 'Nouvelle création';
                 document.getElementById('creationId').value = '';
-                // Nouvelle création : on la met à la fin avec une grande valeur
                 document.getElementById('ordre').value = 9999;
             }
             

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fil et Fleur — By IRIS Mes Créations</title>
+    <title>Fil et Fleur by Iris — Mes Créations</title>
     <style>
         /* ===== RESET & VARIABLES ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -72,22 +72,20 @@
             flex-wrap: wrap;
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        .brand { display: flex; align-items: center; gap: 12px; }
         .brand-icon { font-size: 2em; line-height: 1; }
-
-        .brand h1 {
-            font-size: 1.25em;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: -0.02em;
+        
+        .brand-text { display: flex; flex-direction: column; }
+        .brand h1 { font-size: 1.25em; font-weight: 700; color: var(--text); letter-spacing: -0.02em; line-height: 1.1; }
+        
+        /* --- NOUVEAU : Style pour "by Iris" --- */
+        .brand-by { 
+            font-size: 0.85em; 
+            color: var(--primary); 
+            font-weight: 600; 
+            font-style: italic;
+            margin-top: 2px;
         }
-
-        .brand-sub { font-size: 0.8em; color: var(--text-muted); font-weight: 500; }
 
         .nav {
             display: flex;
@@ -111,16 +109,9 @@
         }
 
         .nav-btn:hover { color: var(--text); }
-
-        .nav-btn.active {
-            background: var(--surface);
-            color: var(--primary);
-            font-weight: 600;
-            box-shadow: var(--shadow-sm);
-        }
+        .nav-btn.active { background: var(--surface); color: var(--primary); font-weight: 600; box-shadow: var(--shadow-sm); }
 
         .topbar-actions { display: flex; gap: 8px; }
-
         .icon-btn {
             background: var(--bg-soft);
             border: none;
@@ -130,7 +121,6 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-
         .icon-btn:hover { background: var(--border); }
 
         /* ===== KPI BAR ===== */
@@ -153,24 +143,8 @@
         }
 
         .kpi:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-
-        .kpi-value {
-            display: block;
-            font-size: 2em;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-        }
-
-        .kpi-label {
-            display: block;
-            font-size: 0.85em;
-            color: var(--text-muted);
-            margin-top: 4px;
-            font-weight: 500;
-        }
-
+        .kpi-value { display: block; font-size: 2em; font-weight: 700; color: var(--text); letter-spacing: -0.03em; line-height: 1.1; }
+        .kpi-label { display: block; font-size: 0.85em; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
         .kpi-accent .kpi-value { color: var(--primary); }
 
         /* ===== TOOLBAR ===== */
@@ -185,12 +159,7 @@
             flex-wrap: wrap;
         }
 
-        .toolbar-left {
-            display: flex;
-            gap: 12px;
-            flex: 1;
-            min-width: 280px;
-        }
+        .toolbar-left { display: flex; gap: 12px; flex: 1; min-width: 280px; }
 
         .search, .select {
             padding: 10px 14px;
@@ -204,12 +173,7 @@
         }
 
         .search { flex: 1; min-width: 200px; }
-
-        .search:focus, .select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
-        }
+        .search:focus, .select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
 
         /* ===== BOUTONS ===== */
         .btn-primary {
@@ -291,13 +255,7 @@
             color: var(--text-light);
         }
 
-        .carte-body {
-            padding: 16px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+        .carte-body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
 
         .badge {
             display: inline-block;
@@ -318,12 +276,7 @@
         body.dark .badge-vendu { background: #064e3b; color: #6ee7b7; }
         body.dark .badge-en-cours { background: #1e3a8a; color: #93c5fd; }
 
-        .carte-body h3 {
-            font-size: 1.05em;
-            font-weight: 600;
-            color: var(--text);
-            line-height: 1.3;
-        }
+        .carte-body h3 { font-size: 1.05em; font-weight: 600; color: var(--text); line-height: 1.3; }
 
         .carte-desc {
             font-size: 0.85em;
@@ -388,14 +341,9 @@
         .biblio-table tr:hover td { background: var(--bg-soft); }
 
         .biblio-thumb {
-            width: 44px;
-            height: 44px;
-            border-radius: 6px;
-            object-fit: cover;
+            width: 44px; height: 44px; border-radius: 6px; object-fit: cover;
             background: var(--bg-soft);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 1.2em;
         }
 
@@ -414,10 +362,7 @@
             font-family: var(--font);
         }
 
-        .biblio-actions button:hover, .biblio-actions a:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
+        .biblio-actions button:hover, .biblio-actions a:hover { border-color: var(--primary); color: var(--primary); }
 
         /* ===== STATS ===== */
         .stats-grid {
@@ -451,16 +396,8 @@
         .chart-bar-label { min-width: 90px; font-size: 0.85em; color: var(--text); font-weight: 500; }
 
         .chart-bar-fill {
-            height: 28px;
-            border-radius: 6px;
-            transition: width 0.5s;
-            min-width: 4px;
-            display: flex;
-            align-items: center;
-            padding-left: 10px;
-            color: white;
-            font-size: 0.8em;
-            font-weight: 600;
+            height: 28px; border-radius: 6px; transition: width 0.5s; min-width: 4px;
+            display: flex; align-items: center; padding-left: 10px; color: white; font-size: 0.8em; font-weight: 600;
         }
 
         .chart-bar-fill.pink { background: linear-gradient(90deg, #ec4899, #be185d); }
@@ -468,76 +405,40 @@
         .chart-bar-fill.green { background: linear-gradient(90deg, #10b981, #047857); }
         .chart-bar-fill.amber { background: linear-gradient(90deg, #f59e0b, #b45309); }
 
-        .list-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9em;
-        }
-
+        .list-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9em; }
         .list-item:last-child { border-bottom: none; }
         .list-item strong { color: var(--text); }
         .list-item span { color: var(--text-muted); }
 
         /* ===== EMPTY STATE ===== */
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            color: var(--text-muted);
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
+        .empty-state { text-align: center; padding: 80px 20px; color: var(--text-muted); max-width: 500px; margin: 0 auto; }
         .empty-icon { font-size: 4em; margin-bottom: 16px; opacity: 0.5; }
         .empty-state h3 { font-size: 1.3em; color: var(--text); margin-bottom: 8px; }
         .empty-state p { margin-bottom: 20px; }
 
         /* ===== MODALE ===== */
         .modale {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            overflow-y: auto;
-            padding: 20px;
-            backdrop-filter: blur(4px);
+            display: none; position: fixed; z-index: 1000; inset: 0;
+            background: rgba(0,0,0,0.5); overflow-y: auto; padding: 20px; backdrop-filter: blur(4px);
         }
 
         .modale.actif { display: flex; align-items: flex-start; justify-content: center; }
 
         .modale-contenu {
-            background: var(--surface);
-            border-radius: var(--radius);
-            max-width: 640px;
-            width: 100%;
-            margin: 20px auto;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
+            background: var(--surface); border-radius: var(--radius); max-width: 640px;
+            width: 100%; margin: 20px auto; box-shadow: var(--shadow-lg); overflow: hidden;
         }
 
         .modale-detail { max-width: 700px; }
 
         .modale-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 20px 24px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
         }
 
         .modale-header h2 { font-size: 1.2em; font-weight: 700; color: var(--text); }
 
-        .fermer {
-            font-size: 1.8em;
-            cursor: pointer;
-            color: var(--text-muted);
-            line-height: 1;
-            padding: 0 6px;
-            transition: color 0.2s;
-        }
-
+        .fermer { font-size: 1.8em; cursor: pointer; color: var(--text-muted); line-height: 1; padding: 0 6px; transition: color 0.2s; }
         .fermer:hover { color: var(--primary); }
 
         #formCreation { padding: 24px; }
@@ -545,159 +446,70 @@
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .form-group { margin-bottom: 16px; }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 0.85em;
-            color: var(--text);
-        }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85em; color: var(--text); }
 
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.95em;
-            font-family: var(--font);
-            background: var(--surface);
-            color: var(--text);
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+            font-size: 0.95em; font-family: var(--font); background: var(--surface); color: var(--text);
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft);
         }
 
         .photo-input-row { display: flex; gap: 8px; }
         .photo-input-row input { flex: 1; }
 
         .file-label {
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
-            padding: 10px 16px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
-            transition: all 0.2s;
+            background: var(--bg-soft); border: 1px solid var(--border); padding: 10px 16px;
+            border-radius: var(--radius-sm); cursor: pointer; font-size: 0.9em; font-weight: 500;
+            display: inline-flex; align-items: center; white-space: nowrap; transition: all 0.2s;
         }
 
         .file-label:hover { background: var(--border); color: var(--primary); }
 
-        .preview-box { margin-top: 12px; }
-        .preview-box img { max-width: 150px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-
-        /* ===== BLOC AGNES ===== */
-        .agnes-bloc {
-            margin-top: 20px;
-            padding: 16px;
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-            border-radius: var(--radius-sm);
-            border: 1px solid #bfdbfe;
+        /* --- Galerie d'aperçu --- */
+        .preview-box { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .preview-box img { 
+            width: 80px; height: 80px; object-fit: cover; 
+            border-radius: var(--radius-sm); border: 1px solid var(--border); 
         }
-
-        body.dark .agnes-bloc {
-            background: linear-gradient(135deg, #1e3a5f, #0c2340);
-            border-color: #1e40af;
-        }
-
-        .agnes-header { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
-        .agnes-icon { font-size: 1.4em; }
-        .agnes-header strong { color: #1e40af; font-size: 0.95em; }
-        body.dark .agnes-header strong { color: #93c5fd; }
-
-        .agnes-aide { font-size: 0.8em; color: #3730a3; margin-top: 2px; }
-        body.dark .agnes-aide { color: #bfdbfe; }
-
-        .agnes-input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #93c5fd;
-            border-radius: var(--radius-sm);
-            font-size: 0.9em;
-            background: var(--surface);
-            color: var(--text);
-            font-family: var(--font);
-        }
-
-        .agnes-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-
-        .btn-agnes {
-            background: #0284c7;
-            color: white;
-            border: none;
-            padding: 9px 14px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: 0.85em;
-            font-weight: 600;
-            transition: background 0.2s;
-            font-family: var(--font);
-        }
-
-        .btn-agnes:hover { background: #0369a1; }
-        .btn-agnes-alt { background: #7c3aed; }
-        .btn-agnes-alt:hover { background: #6d28d9; }
-
-        .agnes-statut { margin-top: 10px; font-size: 0.85em; min-height: 1.2em; color: var(--text-muted); }
 
         /* ===== DÉTAIL ===== */
         #detailContenu { padding: 24px; }
 
+        /* --- Galerie en grand --- */
+        .detail-galerie { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 10px; margin-bottom: 20px; 
+        }
         .detail-image {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            border-radius: var(--radius-sm);
-            margin-bottom: 20px;
-            background: var(--bg-soft);
+            width: 100%; height: 200px; object-fit: cover;
+            border-radius: var(--radius-sm); background: var(--bg-soft);
         }
 
         .detail-info { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-
         .detail-info-item { padding: 12px; background: var(--bg-soft); border-radius: var(--radius-sm); }
 
         .detail-info-item label {
-            display: block;
-            font-size: 0.75em;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            font-weight: 600;
+            display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em;
+            color: var(--text-muted); margin-bottom: 4px; font-weight: 600;
         }
 
         .detail-info-item span { font-weight: 600; color: var(--text); }
 
         .detail-description {
-            padding: 16px;
-            background: var(--bg-soft);
-            border-radius: var(--radius-sm);
-            line-height: 1.6;
-            color: var(--text);
-            margin-bottom: 20px;
+            padding: 16px; background: var(--bg-soft); border-radius: var(--radius-sm);
+            line-height: 1.6; color: var(--text); margin-bottom: 20px;
         }
 
         .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
         /* ===== FORM BOUTONS ===== */
         .form-boutons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
+            display: flex; gap: 10px; justify-content: flex-end;
+            margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);
         }
 
         /* ===== FOOTER ===== */
@@ -727,9 +539,9 @@
         <div class="topbar-inner">
             <div class="brand">
                 <span class="brand-icon">🌸</span>
-                <div>
+                <div class="brand-text">
                     <h1>Fil et Fleur</h1>
-                    <p class="brand-sub">Peluches faites main</p>
+                    <p class="brand-by">by Iris</p>
                 </div>
             </div>
             <nav class="nav">
@@ -841,10 +653,12 @@
                     <textarea id="description" rows="3" placeholder="Taille, matière, détails..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Photo</label>
+                    <label>Photos (Plusieurs possibles)</label>
                     <div class="photo-input-row">
-                        <input type="text" id="photoUrl" placeholder="URL de l'image" oninput="previewPhotoUrl()">
-                        <label class="file-label">📁 Upload<input type="file" id="photoFile" accept="image/*" onchange="previewPhoto(event)" style="display:none"></label>
+                        <label class="file-label" style="width: 100%; justify-content: center;">
+                            📁 Ajouter des photos
+                            <input type="file" id="photoFile" accept="image/*" multiple onchange="previewPhotos(event)" style="display:none">
+                        </label>
                     </div>
                     <div id="previewContainer" class="preview-box"></div>
                 </div>
@@ -853,23 +667,6 @@
                     <div class="form-group"><label>Date de vente</label><input type="date" id="dateVente"></div>
                 </div>
                 <div class="form-group"><label>Lien Vinted</label><input type="url" id="lienVinted" placeholder="https://www.vinted.fr/..."></div>
-
-                <!-- Bloc Agnes -->
-                <div class="agnes-bloc">
-                    <div class="agnes-header">
-                        <span class="agnes-icon">✨</span>
-                        <div>
-                            <strong>Générer un fond avec Agnes</strong>
-                            <p class="agnes-aide">Ta peluche sera conservée, seul le fond est généré.</p>
-                        </div>
-                    </div>
-                    <input type="text" id="promptAgnes" class="agnes-input" placeholder="Ex: fond Halloween pastel, citrouilles mignonnes">
-                    <div class="agnes-actions">
-                        <button type="button" class="btn-agnes" onclick="genererFondAgnes(false)">🎨 Générer & Télécharger</button>
-                        <button type="button" class="btn-agnes btn-agnes-alt" onclick="genererFondAgnes(true)">🔄 Générer & Remplacer</button>
-                    </div>
-                    <div id="statutAgnes" class="agnes-statut"></div>
-                </div>
 
                 <div class="form-boutons">
                     <button type="button" class="btn-secondary" onclick="fermerFormulaire()">Annuler</button>
@@ -890,17 +687,15 @@
         </div>
     </div>
 
-    <footer class="footer"><p>Fil et Fleur · Fait avec 🧶 et ❤️</p></footer>
+    <footer class="footer"><p>Fil et Fleur by Iris · Fait avec 🧶 et ❤️</p></footer>
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
         const CLE_STORAGE = 'creationsPeluches';
         const CLE_DARK = 'atelierDarkMode';
-        const AGNES_API_URL = 'https://apihub.agnes-ai.com/v1/images/generations';
-        const AGNES_API_KEY = 'sk-A3uAU6syfD32yMffM54Bl1IARLmpfCBe4z5i0NcZXidfxlKN'; // ← Remplacer par ta clé API
 
         let creations = [];
-        let photoActuelle = '';
+        let photosActuelles = [];
         let triBiblio = { cle: 'nom', sens: 1 };
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -914,6 +709,15 @@
         function chargerCreations() {
             const data = localStorage.getItem(CLE_STORAGE);
             creations = data ? JSON.parse(data) : [];
+            
+            creations = creations.map(c => {
+                if (c.photo && !c.photos) {
+                    c.photos = [c.photo];
+                    delete c.photo;
+                }
+                if (!c.photos) c.photos = [];
+                return c;
+            });
         }
 
         function sauvegarderStorage() {
@@ -971,7 +775,9 @@
                 if (e.target.closest('button') || e.target.closest('a')) return;
                 ouvrirDetail(c.id);
             };
-            const imageHtml = c.photo ? `<img src="${echapper(c.photo)}" alt="${echapper(c.nom)}" class="carte-image">` : `<div class="carte-image">🌸</div>`;
+            const photoCouverture = c.photos && c.photos.length > 0 ? c.photos[0] : null;
+            const imageHtml = photoCouverture ? `<img src="${echapper(photoCouverture)}" alt="${echapper(c.nom)}" class="carte-image">` : `<div class="carte-image">🌸</div>`;
+            
             const badges = {
                 'en-vente': '<span class="badge badge-en-vente">En vente</span>',
                 'vendu': '<span class="badge badge-vendu">Vendu</span>',
@@ -1013,7 +819,8 @@
                     'vendu': '<span class="badge badge-vendu">Vendu</span>',
                     'en-cours': '<span class="badge badge-en-cours">En cours</span>'
                 };
-                const photo = c.photo ? `<img src="${echapper(c.photo)}" class="biblio-thumb">` : `<div class="biblio-thumb">🌸</div>`;
+                const photoCouverture = c.photos && c.photos.length > 0 ? c.photos[0] : null;
+                const photo = photoCouverture ? `<img src="${echapper(photoCouverture)}" class="biblio-thumb">` : `<div class="biblio-thumb">🌸</div>`;
                 const prix = c.prix ? `${parseFloat(c.prix).toFixed(2)} €` : '—';
                 const date = c.dateVente ? formaterDate(c.dateVente) : '—';
                 tr.innerHTML = `
@@ -1098,19 +905,24 @@
             const previewContainer = document.getElementById('previewContainer');
             document.getElementById('formCreation').reset();
             previewContainer.innerHTML = '';
-            document.getElementById('statutAgnes').textContent = '';
-            photoActuelle = '';
+            photosActuelles = [];
+            
             if (creation) {
                 document.getElementById('titreModale').textContent = 'Modifier la création';
                 document.getElementById('creationId').value = creation.id;
                 document.getElementById('nom').value = creation.nom;
                 document.getElementById('description').value = creation.description || '';
-                document.getElementById('photoUrl').value = creation.photo && creation.photo.startsWith('http') ? creation.photo : '';
                 document.getElementById('statut').value = creation.statut;
                 document.getElementById('prix').value = creation.prix || '';
                 document.getElementById('lienVinted').value = creation.lienVinted || '';
                 document.getElementById('dateVente').value = creation.dateVente || '';
-                if (creation.photo) previewContainer.innerHTML = `<img src="${creation.photo}" alt="Aperçu">`;
+                
+                if (creation.photos && creation.photos.length > 0) {
+                    photosActuelles = [...creation.photos];
+                    photosActuelles.forEach(photo => {
+                        previewContainer.innerHTML += `<img src="${photo}" alt="Aperçu">`;
+                    });
+                }
             } else {
                 document.getElementById('titreModale').textContent = 'Nouvelle création';
                 document.getElementById('creationId').value = '';
@@ -1129,39 +941,38 @@
             if (event.target === document.getElementById('modaleDetail')) fermerDetail();
         }
 
-        function previewPhoto(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = e => {
-                photoActuelle = e.target.result;
-                document.getElementById('previewContainer').innerHTML = `<img src="${photoActuelle}" alt="Aperçu">`;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function previewPhotoUrl() {
-            const url = document.getElementById('photoUrl').value.trim();
-            if (url) {
-                photoActuelle = '';
-                document.getElementById('previewContainer').innerHTML = `<img src="${url}" alt="Aperçu" onerror="this.style.display='none'">`;
+        function previewPhotos(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+            
+            const previewContainer = document.getElementById('previewContainer');
+            
+            for (let i = 0; i < files.length; i++) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    photosActuelles.push(e.target.result);
+                    previewContainer.innerHTML += `<img src="${e.target.result}" alt="Aperçu">`;
+                };
+                reader.readAsDataURL(files[i]);
             }
+            event.target.value = ''; 
         }
 
         function sauvegarderCreation(event) {
             event.preventDefault();
             const id = document.getElementById('creationId').value;
-            const photoUrl = document.getElementById('photoUrl').value.trim();
+            
             const creation = {
                 id: id ? parseInt(id) : Date.now(),
                 nom: document.getElementById('nom').value.trim(),
                 description: document.getElementById('description').value.trim(),
-                photo: photoActuelle || photoUrl,
+                photos: photosActuelles,
                 statut: document.getElementById('statut').value,
                 prix: document.getElementById('prix').value,
                 lienVinted: document.getElementById('lienVinted').value.trim(),
                 dateVente: document.getElementById('dateVente').value
             };
+            
             if (id) {
                 const index = creations.findIndex(c => c.id === parseInt(id));
                 if (index !== -1) creations[index] = creation;
@@ -1199,9 +1010,20 @@
                 'vendu': '<span class="badge badge-vendu">Vendu</span>',
                 'en-cours': '<span class="badge badge-en-cours">En cours</span>'
             };
-            const photo = c.photo ? `<img src="${echapper(c.photo)}" class="detail-image">` : `<div class="carte-image" style="height:300px;border-radius:8px;">🌸</div>`;
+            
+            let photosHtml = '';
+            if (c.photos && c.photos.length > 0) {
+                photosHtml = `<div class="detail-galerie">`;
+                c.photos.forEach(photo => {
+                    photosHtml += `<img src="${echapper(photo)}" class="detail-image">`;
+                });
+                photosHtml += `</div>`;
+            } else {
+                photosHtml = `<div class="carte-image" style="height:300px;border-radius:8px;margin-bottom:20px;">🌸</div>`;
+            }
+
             document.getElementById('detailContenu').innerHTML = `
-                ${photo}
+                ${photosHtml}
                 <div style="margin-bottom:16px;">${badges[c.statut]}</div>
                 <div class="detail-info">
                     <div class="detail-info-item"><label>Prix</label><span>${c.prix ? parseFloat(c.prix).toFixed(2) + ' €' : '—'}</span></div>
@@ -1250,6 +1072,11 @@
                         return;
                     }
                     creations = data;
+                    creations = creations.map(c => {
+                        if (c.photo && !c.photos) { c.photos = [c.photo]; delete c.photo; }
+                        if (!c.photos) c.photos = [];
+                        return c;
+                    });
                     sauvegarderStorage();
                     afficherCreations();
                     mettreAJourStats();
@@ -1261,63 +1088,6 @@
                 event.target.value = '';
             };
             reader.readAsText(file);
-        }
-
-        async function genererFondAgnes(remplacerPhoto) {
-            const statutDiv = document.getElementById('statutAgnes');
-            const prompt = document.getElementById('promptAgnes').value.trim();
-            const nom = document.getElementById('nom').value.trim() || 'peluche';
-            let photoBase = photoActuelle || document.getElementById('photoUrl').value.trim();
-            if (!photoBase) { statutDiv.textContent = '⚠️ Ajoute d\'abord une photo de la peluche.'; statutDiv.style.color = 'var(--danger)'; return; }
-            if (!prompt) { statutDiv.textContent = '⚠️ Décris le fond souhaité.'; statutDiv.style.color = 'var(--danger)'; return; }
-            if (!AGNES_API_KEY || AGNES_API_KEY === 'YOUR_API_KEY') { statutDiv.textContent = '⚠️ Clé API Agnes non configurée (édite le fichier HTML).'; statutDiv.style.color = 'var(--danger)'; return; }
-            statutDiv.textContent = '⏳ Génération en cours... (10-30 s)';
-            statutDiv.style.color = 'var(--info)';
-            try {
-                const response = await fetch(AGNES_API_URL, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${AGNES_API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model: 'agnes-image-2.0-flash',
-                        prompt: `Place this crochet plush on the following background: ${prompt}. Keep the plush exactly as in the input image, unchanged, realistic lighting, high quality, centered composition.`,
-                        size: '1024x1024',
-                        image: [photoBase],
-                        extra_body: { response_format: 'url' }
-                    })
-                });
-                if (!response.ok) {
-                    let msg = `Erreur HTTP ${response.status}`;
-                    try { const e = await response.json(); msg = e.error?.message || e.message || msg; } catch(_) {}
-                    throw new Error(msg);
-                }
-                const data = await response.json();
-                const img = data.data?.[0]?.url || data.data?.[0]?.b64_json;
-                if (!img) throw new Error('Pas d\'image renvoyée.');
-                const finalUrl = img.startsWith('http') ? img : 'data:image/png;base64,' + img;
-                const nomFichier = `peluche-${nom.replace(/[^a-z0-9]/gi, '-')}-fond-${Date.now()}.png`;
-                telechargerImage(finalUrl, nomFichier);
-                statutDiv.textContent = `✅ Image générée et téléchargée : ${nomFichier}`;
-                statutDiv.style.color = 'var(--success)';
-                if (remplacerPhoto) {
-                    if (finalUrl.startsWith('http')) { document.getElementById('photoUrl').value = finalUrl; photoActuelle = ''; }
-                    else { photoActuelle = finalUrl; document.getElementById('photoUrl').value = ''; }
-                    document.getElementById('previewContainer').innerHTML = `<img src="${finalUrl}" alt="Aperçu">`;
-                    statutDiv.textContent += ' — Photo mise à jour.';
-                }
-            } catch (err) {
-                console.error(err);
-                statutDiv.textContent = `❌ ${err.message}`;
-                statutDiv.style.color = 'var(--danger)';
-            }
-        }
-
-        function telechargerImage(url, nomFichier) {
-            const lien = document.createElement('a');
-            lien.href = url;
-            lien.download = nomFichier;
-            document.body.appendChild(lien);
-            lien.click();
-            document.body.removeChild(lien);
         }
 
         function echapper(texte) {

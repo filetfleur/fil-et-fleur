@@ -101,8 +101,29 @@
         .carte-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
         .prix { font-weight: 700; font-size: 1.1em; color: var(--primary); } .date-vente { font-size: 0.75em; color: var(--text-light); }
         
-        /* Bouton J'aime sur la carte */
-        .like-btn-card { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.9); border: none; border-radius: 20px; padding: 6px 12px; font-size: 0.9em; font-weight: 600; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: var(--shadow-sm); transition: all 0.2s; z-index: 10; }
+        /* === CORRECTION DU BOUTON J'AIME === */
+        .like-btn-card { 
+            position: absolute; 
+            top: 12px; 
+            right: 12px; 
+            background: rgba(255, 255, 255, 0.95); 
+            border: 1px solid rgba(0,0,0,0.05); 
+            border-radius: 20px; 
+            padding: 6px 14px; 
+            font-size: 1em; 
+            font-weight: 600; 
+            color: var(--text); 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            transition: all 0.2s; 
+            z-index: 10; 
+            min-width: 60px;
+            font-family: var(--font);
+        }
         .like-btn-card:hover { transform: scale(1.05); background: white; }
         .like-btn-card.liked { color: var(--primary); }
 
@@ -160,8 +181,7 @@
         .detail-description { padding: 16px; background: var(--bg-soft); border-radius: var(--radius-sm); line-height: 1.6; color: var(--text); margin-bottom: 20px; }
         .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
-        /* Bouton J'aime dans le détail */
-        .like-btn-detail { background: var(--bg-soft); border: 1px solid var(--border); padding: 10px 16px; border-radius: var(--radius-sm); font-size: 1em; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; color: var(--text); }
+        .like-btn-detail { background: var(--bg-soft); border: 1px solid var(--border); padding: 10px 16px; border-radius: var(--radius-sm); font-size: 1em; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; color: var(--text); font-family: var(--font); }
         .like-btn-detail:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
         .like-btn-detail.liked { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
 

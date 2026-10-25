@@ -9,7 +9,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, increment, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -25,7 +25,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        window.FB = { db, auth, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, increment, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+        window.FB = { db, auth, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, increment, query, where, signInWithEmailAndPassword, signOut, onAuthStateChanged };
         window.dispatchEvent(new Event('firebaseReady'));
     </script>
 
@@ -88,6 +88,8 @@
         .btn-primary:hover { background: var(--primary-hover); }
         .btn-secondary { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); padding: 10px 20px; border-radius: var(--radius-sm); font-size: 0.95em; font-weight: 500; cursor: pointer; font-family: var(--font); }
         .btn-secondary:hover { background: var(--border); }
+        .btn-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 10px 20px; border-radius: var(--radius-sm); font-size: 0.95em; font-weight: 600; cursor: pointer; font-family: var(--font); transition: all 0.2s; }
+        .btn-danger:hover { background: #fecaca; }
         
         .onglet { display: none; animation: fadeIn 0.3s; }
         .onglet.active { display: block; }
@@ -105,7 +107,7 @@
         .badge-vendu { background: #d1fae5; color: #065f46; } 
         .badge-en-cours { background: #dbeafe; color: #1e40af; }
         .badge-sur-commande { background: #fce7f3; color: #9d174d; }
-        .badge-ancien-modele { background: #f3e8ff; color: #6b21a8; } /* Violet pour les anciens modèles */
+        .badge-ancien-modele { background: #f3e8ff; color: #6b21a8; }
         
         body.dark .badge-en-vente { background: #422006; color: #fbbf24; } 
         body.dark .badge-vendu { background: #064e3b; color: #6ee7b7; } 
@@ -114,7 +116,7 @@
         body.dark .badge-ancien-modele { background: #3b0764; color: #e9d5ff; }
         
         .carte-body h3 { font-size: 1.05em; font-weight: 600; color: var(--text); line-height: 1.3; }
-        .carte-desc { font-size: 0.85em; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+        .carte-desc { font-size: 0.85em; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; max-height: 2.8em; flex: 1; }
         .carte-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
         .prix { font-weight: 700; font-size: 1.1em; color: var(--primary); } .date-vente { font-size: 0.75em; color: var(--text-light); }
         
@@ -137,6 +139,35 @@
         .btn-sort button { padding: 4px 8px; font-size: 0.75em; font-weight: 600; background: var(--bg-soft); border: 1px solid var(--border); color: var(--text); border-radius: 4px; cursor: pointer; transition: all 0.2s; }
         .btn-sort button:hover:not(:disabled) { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
         .btn-sort button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* === GESTION DES AVIS ADMIN === */
+        .avis-admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .avis-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 10px; }
+        .avis-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .avis-stars { color: #f59e0b; font-size: 1.2em; letter-spacing: 2px; }
+        .avis-name { font-weight: 700; font-size: 1.05em; }
+        .avis-text { font-style: italic; color: var(--text-muted); background: var(--bg-soft); padding: 10px; border-radius: 8px; font-size: 0.9em; }
+        .avis-actions { display: flex; gap: 10px; margin-top: auto; }
+        .avis-actions button { flex: 1; padding: 8px; font-size: 0.85em; }
+
+        /* === SECTION AVIS SUR LA FICHE PRODUIT === */
+        .avis-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); }
+        .avis-section h3 { margin-bottom: 15px; color: var(--text); font-size: 1.1em; }
+        .avis-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .avis-item { background: var(--bg-soft); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--warning); }
+        .avis-item-header { display: flex; justify-content: space-between; margin-bottom: 5px; align-items: center; }
+        .avis-item-name { font-weight: 600; font-size: 0.9em; }
+        .avis-item-stars { color: #f59e0b; font-size: 0.9em; }
+        .avis-item-text { font-size: 0.9em; color: var(--text-muted); }
+        
+        .form-avis { background: var(--surface); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+        .form-avis h4 { margin-bottom: 10px; font-size: 0.95em; }
+        .form-avis-group { margin-bottom: 10px; }
+        .form-avis-group label { display: block; font-size: 0.8em; font-weight: 600; margin-bottom: 4px; }
+        .form-avis-group input, .form-avis-group textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-family: var(--font); font-size: 0.9em; background: var(--bg); color: var(--text); }
+        .star-rating { display: flex; gap: 5px; font-size: 1.5em; cursor: pointer; }
+        .star-rating span { color: #d1d5db; transition: color 0.2s; }
+        .star-rating span.active { color: #f59e0b; }
 
         .stats-grid { max-width: 1280px; margin: 0 auto 40px; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         .stat-card { background: var(--surface); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
@@ -223,7 +254,9 @@
             </div>
             <nav class="nav">
                 <button class="nav-btn active" data-tab="galerie" onclick="changerOnglet('galerie')">🌸 Galerie</button>
+                <!-- Nouvel onglet Avis -->
                 <button id="navBiblio" class="nav-btn" style="display:none;" data-tab="bibliotheque" onclick="changerOnglet('bibliotheque')">📚 Bibliothèque</button>
+                <button id="navAvis" class="nav-btn" style="display:none;" data-tab="avis-admin" onclick="changerOnglet('avis-admin')">💬 Avis (<span id="badgeAvis">0</span>)</button>
                 <button id="navStats" class="nav-btn" style="display:none;" data-tab="stats" onclick="changerOnglet('stats')">📊 Statistiques</button>
             </nav>
             <div class="topbar-actions">
@@ -258,7 +291,7 @@
             <div class="kpi kpi-accent"><span class="kpi-value" id="statRevenu">0 €</span><span class="kpi-label">Chiffre d'affaires</span></div>
         </section>
         
-        <section class="toolbar">
+        <section class="toolbar" id="toolbarGalerie">
             <div class="filter-bar" id="filterBar">
                 <button class="filter-btn active" data-filter="tous">Tout voir</button>
                 <button class="filter-btn" data-filter="en-vente">🛍️ En vente</button>
@@ -282,6 +315,22 @@
                     <thead><tr><th style="width:60px;">Photo</th><th>Nom</th><th>Statut</th><th>Prix</th><th>Vente</th><th style="width:220px;">Actions</th></tr></thead>
                     <tbody id="biblioBody"></tbody>
                 </table>
+            </div>
+        </main>
+
+        <!-- === NOUVEL ONGLET : GESTION DES AVIS === -->
+        <main id="onglet-avis-admin" class="onglet">
+            <div class="biblio-wrapper">
+                <h2 style="margin-bottom: 20px; font-size: 1.3em; color: var(--primary);">Avis en attente de validation</h2>
+                <div id="avisEnAttenteGrid" class="avis-admin-grid"></div>
+                <div id="avisVide" class="empty-state" style="display:none;">
+                    <div class="empty-icon">💬</div>
+                    <h3>Aucun avis en attente</h3>
+                    <p>C'est tout bon ! Tous les avis ont été traités.</p>
+                </div>
+
+                <h2 style="margin-top: 40px; margin-bottom: 20px; font-size: 1.3em; color: var(--success);">Avis publiés</h2>
+                <div id="avisPubliesGrid" class="avis-admin-grid"></div>
             </div>
         </main>
         
@@ -341,9 +390,12 @@
 
     <script>
         let creations = [];
+        let avisEnAttente = [];
+        let avisPublies = [];
         let photosActuelles = [];
         let isAdmin = false;
         let currentFilter = 'tous';
+        let avisNoteActuelle = 5; // Par défaut 5 étoiles
         
         const MON_INSTAGRAM = "https://www.instagram.com/fil_et.fleur";
         const MON_TIKTOK = "https://www.tiktok.com/@fil_et_fleur";
@@ -355,6 +407,7 @@
                 const statsBar = document.getElementById('adminStatsBar');
                 const biblioBtn = document.getElementById('navBiblio');
                 const statsBtn = document.getElementById('navStats');
+                const avisBtn = document.getElementById('navAvis');
                 
                 if (user) {
                     isAdmin = true;
@@ -366,8 +419,10 @@
                     if (statsBar) statsBar.style.display = 'grid';
                     if (biblioBtn) biblioBtn.style.display = 'block';
                     if (statsBtn) statsBtn.style.display = 'block';
+                    if (avisBtn) avisBtn.style.display = 'block';
                     
                     chargerCreations();
+                    chargerAvis();
                 } else {
                     isAdmin = false;
                     document.getElementById('mainContent').style.display = 'block';
@@ -377,13 +432,16 @@
                     if (statsBar) statsBar.style.display = 'none';
                     if (biblioBtn) biblioBtn.style.display = 'none';
                     if (statsBtn) statsBtn.style.display = 'none';
+                    if (avisBtn) avisBtn.style.display = 'none';
                     
                     changerOnglet('galerie');
                     chargerCreations(); 
+                    chargerAvis();
                 }
             });
         });
 
+        // === CHARGER LES CRÉATIONS ===
         async function chargerCreations() {
             const { db, collection, getDocs } = window.FB;
             try {
@@ -398,6 +456,34 @@
                 afficherStatsDetaillees();
             } catch (e) {
                 console.error("Erreur chargement:", e);
+            }
+        }
+
+        // === CHARGER LES AVIS ===
+        async function chargerAvis() {
+            const { db, collection, getDocs } = window.FB;
+            try {
+                const querySnapshot = await getDocs(collection(db, "avis"));
+                avisEnAttente = [];
+                avisPublies = [];
+                querySnapshot.forEach((doc) => {
+                    const data = { id: doc.id, ...doc.data() };
+                    if (data.statut === 'en-attente') avisEnAttente.push(data);
+                    else if (data.statut === 'publie') avisPublies.push(data);
+                });
+                
+                // Mettre à jour le badge du menu
+                if (avisEnAttente.length > 0) {
+                    document.getElementById('badgeAvis').textContent = avisEnAttente.length;
+                    document.getElementById('badgeAvis').style.color = '#ef4444';
+                } else {
+                    document.getElementById('badgeAvis').textContent = '0';
+                    document.getElementById('badgeAvis').style.color = 'inherit';
+                }
+
+                if (isAdmin) afficherAvisAdmin();
+            } catch (e) {
+                console.error("Erreur chargement avis:", e);
             }
         }
 
@@ -431,8 +517,13 @@
             const btn = document.querySelector(`.nav-btn[data-tab="${nom}"]`);
             if(btn) btn.classList.add('active');
             
+            // Cacher/Afficher la barre de recherche selon l'onglet
+            if (nom === 'galerie') document.getElementById('toolbarGalerie').style.display = 'flex';
+            else document.getElementById('toolbarGalerie').style.display = 'none';
+
             if (nom === 'bibliotheque' && isAdmin) afficherBiblio();
             if (nom === 'stats') afficherStatsDetaillees();
+            if (nom === 'avis-admin' && isAdmin) afficherAvisAdmin();
         }
 
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -447,7 +538,6 @@
 
         function getCreationsFiltrees() {
             const recherche = document.getElementById('recherche').value.toLowerCase();
-            
             return creations.filter(c => {
                 const matchRecherche = c.nom.toLowerCase().includes(recherche) || (c.description || '').toLowerCase().includes(recherche);
                 const matchStatut = currentFilter === 'tous' || c.statut === currentFilter;
@@ -757,6 +847,114 @@
             chargerCreations();
         }
 
+        // === GESTION DES AVIS (Admin) ===
+        function afficherAvisAdmin() {
+            const gridAttente = document.getElementById('avisEnAttenteGrid');
+            const gridPublies = document.getElementById('avisPubliesGrid');
+            const msgVide = document.getElementById('avisVide');
+
+            if (avisEnAttente.length === 0) {
+                msgVide.style.display = 'block';
+                gridAttente.innerHTML = '';
+            } else {
+                msgVide.style.display = 'none';
+                gridAttente.innerHTML = avisEnAttente.map(a => {
+                    const prod = creations.find(c => c.id === a.creationId);
+                    const prodName = prod ? prod.nom : 'Produit inconnu';
+                    return `
+                    <div class="avis-card">
+                        <div class="avis-header">
+                            <div>
+                                <div class="avis-name">${a.nom}</div>
+                                <div style="font-size:0.8em; color:var(--text-muted)">Pour : ${prodName}</div>
+                            </div>
+                            <div class="avis-stars">${'⭐'.repeat(a.note)}</div>
+                        </div>
+                        <div class="avis-text">"${a.commentaire}"</div>
+                        <div class="avis-actions">
+                            <button class="btn-primary" onclick="publierAvis('${a.id}')">✅ Publier</button>
+                            <button class="btn-danger" onclick="supprimerAvis('${a.id}')">🗑️ Supprimer</button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            if (avisPublies.length === 0) {
+                gridPublies.innerHTML = '<p style="color:var(--text-muted)">Aucun avis publié pour le moment.</p>';
+            } else {
+                gridPublies.innerHTML = avisPublies.map(a => {
+                    const prod = creations.find(c => c.id === a.creationId);
+                    const prodName = prod ? prod.nom : 'Produit inconnu';
+                    return `
+                    <div class="avis-card" style="border-color: var(--success)">
+                        <div class="avis-header">
+                            <div>
+                                <div class="avis-name">${a.nom}</div>
+                                <div style="font-size:0.8em; color:var(--text-muted)">Pour : ${prodName}</div>
+                            </div>
+                            <div class="avis-stars">${'⭐'.repeat(a.note)}</div>
+                        </div>
+                        <div class="avis-text">"${a.commentaire}"</div>
+                        <div class="avis-actions">
+                            <button class="btn-danger" onclick="supprimerAvis('${a.id}')">🗑️ Supprimer</button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        async function publierAvis(id) {
+            const { db, doc, updateDoc } = window.FB;
+            await updateDoc(doc(db, "avis", id), { statut: 'publie' });
+            chargerAvis();
+        }
+
+        async function supprimerAvis(id) {
+            if (!confirm('Supprimer cet avis ?')) return;
+            const { db, doc, deleteDoc } = window.FB;
+            await deleteDoc(doc(db, "avis", id));
+            chargerAvis();
+        }
+
+        // === GESTION DES AVIS (Client) ===
+        function setNote(n) {
+            avisNoteActuelle = n;
+            document.querySelectorAll('.star-rating span').forEach((star, i) => {
+                if (i < n) star.classList.add('active');
+                else star.classList.remove('active');
+            });
+        }
+
+        async function envoyerAvis(event, creationId) {
+            event.preventDefault();
+            const nom = document.getElementById('avisNom').value.trim();
+            const commentaire = document.getElementById('avisCommentaire').value.trim();
+            
+            if (!nom || !commentaire) {
+                alert("Merci de remplir votre nom et votre commentaire.");
+                return;
+            }
+
+            const { db, collection, addDoc } = window.FB;
+            try {
+                await addDoc(collection(db, "avis"), {
+                    creationId: creationId,
+                    nom: nom,
+                    note: avisNoteActuelle,
+                    commentaire: commentaire,
+                    statut: 'en-attente',
+                    date: new Date().toISOString()
+                });
+                alert("Merci ! Votre avis a bien été envoyé. Il sera publié après validation par Iris.");
+                document.getElementById('formAvis').reset();
+                setNote(5); // Reset étoiles
+                fermerDetail(); 
+            } catch (e) {
+                console.error("Erreur envoi avis:", e);
+                alert("Erreur lors de l'envoi. Vérifie ta connexion.");
+            }
+        }
+
         function ouvrirDetail(id) {
             const c = creations.find(x => x.id === id);
             if (!c) return;
@@ -765,6 +963,24 @@
             
             const nbLikes = c.likes || 0;
             const heartIcon = nbLikes > 0 ? '❤️' : '🤍';
+
+            // Récupérer les avis publiés pour cette création
+            const avisProduit = avisPublies.filter(a => a.creationId === c.id);
+            
+            let avisHtml = '';
+            if (avisProduit.length > 0) {
+                avisHtml = avisProduit.map(a => `
+                    <div class="avis-item">
+                        <div class="avis-item-header">
+                            <span class="avis-item-name">${a.nom}</span>
+                            <span class="avis-item-stars">${'⭐'.repeat(a.note)}</span>
+                        </div>
+                        <div class="avis-item-text">"${a.commentaire}"</div>
+                    </div>
+                `).join('');
+            } else {
+                avisHtml = `<p style="font-size:0.9em; color:var(--text-muted); font-style:italic;">Aucun avis pour le moment. Soyez le premier !</p>`;
+            }
 
             document.getElementById('detailContenu').innerHTML = `
                 ${photosHtml}
@@ -788,8 +1004,42 @@
 
                     ${isAdmin ? `<div style="width:100%; margin-top: 10px; display:flex; gap:10px;"><button class="btn-secondary" onclick="fermerDetail(); modifierCreation('${c.id}')" style="flex:1;">✏️ Modifier</button><button class="btn-secondary" onclick="supprimerCreation('${c.id}')" style="color:var(--danger); flex:1;">🗑️ Supprimer</button></div>` : ''}
                 </div>
+
+                <!-- SECTION AVIS CLIENTS -->
+                <div class="avis-section">
+                    <h3>Avis clients (${avisProduit.length})</h3>
+                    <div class="avis-list">
+                        ${avisHtml}
+                    </div>
+                    
+                    <div class="form-avis">
+                        <h4>Laisser un avis</h4>
+                        <form id="formAvis" onsubmit="envoyerAvis(event, '${c.id}')">
+                            <div class="form-avis-group">
+                                <label>Votre note :</label>
+                                <div class="star-rating" id="starRating">
+                                    <span onclick="setNote(1)">⭐</span>
+                                    <span onclick="setNote(2)">⭐</span>
+                                    <span onclick="setNote(3)">⭐</span>
+                                    <span onclick="setNote(4)">⭐</span>
+                                    <span onclick="setNote(5)">⭐</span>
+                                </div>
+                            </div>
+                            <div class="form-avis-group">
+                                <label>Votre prénom / pseudo *</label>
+                                <input type="text" id="avisNom" required placeholder="Ex: Marie L.">
+                            </div>
+                            <div class="form-avis-group">
+                                <label>Votre commentaire *</label>
+                                <textarea id="avisCommentaire" rows="2" required placeholder="Qu'avez-vous pensé de cette création ?"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Envoyer mon avis</button>
+                        </form>
+                    </div>
+                </div>
             `;
             document.getElementById('modaleDetail').classList.add('actif');
+            setNote(5); // Réinitialiser les étoiles à 5 à l'ouverture
         }
 
         function fermerDetail() { document.getElementById('modaleDetail').classList.remove('actif'); }

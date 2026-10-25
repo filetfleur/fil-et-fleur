@@ -154,8 +154,16 @@
         .photo-input-row { display: flex; gap: 8px; } .photo-input-row input { flex: 1; }
         .file-label { background: var(--bg-soft); border: 1px solid var(--border); padding: 10px 16px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.9em; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap; transition: all 0.2s; }
         .file-label:hover { background: var(--border); color: var(--primary); }
+        
+        /* === NOUVEAU : GESTION DES PHOTOS DANS LE FORMULAIRE === */
         .preview-box { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-        .preview-box img { width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+        .photo-item { position: relative; width: 90px; height: 90px; border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-item .btn-delete { position: absolute; top: 2px; right: 2px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 0.7em; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+        .photo-item .btn-delete:hover { transform: scale(1.1); }
+        .photo-item .btn-move-left, .photo-item .btn-move-right { position: absolute; bottom: 2px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 4px; width: 22px; height: 22px; cursor: pointer; font-size: 0.7em; display: flex; align-items: center; justify-content: center; }
+        .photo-item .btn-move-left { left: 2px; }
+        .photo-item .btn-move-right { right: 2px; }
         
         #detailContenu { padding: 24px; }
         .detail-galerie { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
@@ -171,7 +179,6 @@
         .like-btn-detail:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
         .like-btn-detail.liked { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
 
-        /* Boutons réseaux sociaux */
         .social-buttons { display: flex; gap: 10px; margin-top: 10px; width: 100%; flex-wrap: wrap; }
         .social-buttons a { flex: 1; min-width: 120px; text-align: center; justify-content: center; }
 
@@ -309,7 +316,6 @@
         let triBiblio = { cle: 'nom', sens: 1 };
         let isAdmin = false;
         
-        // ⚠️ METS TES LIENS RÉSEAUX SOCIAUX ICI ⚠️
         const MON_INSTAGRAM = "https://instagram.com/ton_compte";
         const MON_TIKTOK = "https://tiktok.com/@ton_compte";
         const MON_FACEBOOK = "https://facebook.com/ton_compte";
@@ -527,9 +533,9 @@
         function ouvrirFormulaire(creation = null) {
             if (!isAdmin) return;
             document.getElementById('formCreation').reset();
-            document.getElementById('previewContainer').innerHTML = '';
             document.getElementById('uploadStatus').textContent = '';
             photosActuelles = [];
+            
             if (creation) {
                 document.getElementById('titreModale').textContent = 'Modifier';
                 document.getElementById('creationId').value = creation.id;
@@ -539,15 +545,45 @@
                 document.getElementById('prix').value = creation.prix || '';
                 document.getElementById('dateVente').value = creation.dateVente || '';
                 document.getElementById('lienVinted').value = creation.lienVinted || '';
-                if (creation.photos) {
-                    photosActuelles = [...creation.photos];
-                    photosActuelles.forEach(p => document.getElementById('previewContainer').innerHTML += `<img src="${p}">`);
-                }
+                if (creation.photos) photosActuelles = [...creation.photos];
             } else {
                 document.getElementById('titreModale').textContent = 'Nouvelle création';
                 document.getElementById('creationId').value = '';
             }
+            
+            afficherApercuPhotos();
             document.getElementById('modale').classList.add('actif');
+        }
+
+        // === NOUVELLE FONCTION : Afficher les photos avec boutons ===
+        function afficherApercuPhotos() {
+            const container = document.getElementById('previewContainer');
+            container.innerHTML = '';
+            photosActuelles.forEach((photo, index) => {
+                const div = document.createElement('div');
+                div.className = 'photo-item';
+                div.innerHTML = `
+                    <img src="${photo}">
+                    <button type="button" class="btn-delete" onclick="supprimerPhoto(${index})" title="Supprimer">❌</button>
+                    ${index > 0 ? `<button type="button" class="btn-move-left" onclick="deplacerPhoto(${index}, -1)" title="Déplacer à gauche">⬅️</button>` : ''}
+                    ${index < photosActuelles.length - 1 ? `<button type="button" class="btn-move-right" onclick="deplacerPhoto(${index}, 1)" title="Déplacer à droite">➡️</button>` : ''}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function supprimerPhoto(index) {
+            photosActuelles.splice(index, 1);
+            afficherApercuPhotos();
+        }
+
+        function deplacerPhoto(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex >= 0 && newIndex < photosActuelles.length) {
+                // Échange les deux photos
+                [photosActuelles[index], photosActuelles[newIndex]] = [photosActuelles[newIndex], photosActuelles[index]];
+                afficherApercuPhotos();
+            }
         }
 
         function fermerFormulaire() { document.getElementById('modale').classList.remove('actif'); }
@@ -560,10 +596,11 @@
                 statusText.textContent = `Compression de la photo ${i+1}/${files.length}...`;
                 const compressedBase64 = await compresserImage(files[i]);
                 photosActuelles.push(compressedBase64);
-                document.getElementById('previewContainer').innerHTML += `<img src="${compressedBase64}">`;
             }
+            afficherApercuPhotos();
             statusText.textContent = 'Photos prêtes !';
             setTimeout(() => statusText.textContent = '', 3000);
+            event.target.value = ''; // Permet de re-sélectionner le même fichier
         }
 
         function compresserImage(file) {
@@ -643,11 +680,10 @@
                 <div class="detail-actions">
                     ${c.lienVinted ? `<a href="${c.lienVinted}" target="_blank" class="btn-primary" style="text-decoration:none;">🔗 Vinted</a>` : ''}
                     
-                    <!-- RÉSEAUX SOCIAUX -->
                     <div class="social-buttons">
                         <a href="${MON_INSTAGRAM}" target="_blank" class="btn-secondary" style="text-decoration:none;">📸 Instagram</a>
                         <a href="${MON_TIKTOK}" target="_blank" class="btn-secondary" style="text-decoration:none;">🎵 TikTok</a>
-                        <a href="${MON_FACEBOOK}" target="_blank" class="btn-secondary" style="text-decoration:none;">📘 Facebook</a>
+                        <a href="${https://www.facebook.com/laurent.outan.3762/}" target="_blank" class="btn-secondary" style="text-decoration:none;">📘 Facebook</a>
                     </div>
                     
                     <button id="likeBtnDetail" class="like-btn-detail ${nbLikes > 0 ? 'liked' : ''}" data-id="${c.id}" onclick="liker('${c.id}', event)" style="margin-top: 10px;">

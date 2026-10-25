@@ -120,10 +120,16 @@
         .biblio-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.9em; vertical-align: middle; }
         .biblio-table tr:last-child td { border-bottom: none; } .biblio-table tr:hover td { background: var(--bg-soft); }
         .biblio-thumb { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; background: var(--bg-soft); display: flex; align-items: center; justify-content: center; font-size: 1.2em; }
-        .biblio-actions { display: flex; gap: 6px; }
+        
+        .biblio-actions { display: flex; gap: 6px; align-items: center; }
         .biblio-actions button, .biblio-actions a { padding: 6px 10px; border: 1px solid var(--border); background: var(--surface); border-radius: 6px; font-size: 0.8em; cursor: pointer; text-decoration: none; color: var(--text); transition: all 0.2s; font-family: var(--font); }
         .biblio-actions button:hover, .biblio-actions a:hover { border-color: var(--primary); color: var(--primary); }
         
+        /* Boutons de tri */
+        .btn-sort { display: flex; flex-direction: column; gap: 2px; margin-right: 5px; }
+        .btn-sort button { padding: 2px 6px; font-size: 0.7em; border-radius: 4px; cursor: pointer; background: var(--bg-soft); border: 1px solid var(--border); color: var(--text-muted); }
+        .btn-sort button:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+
         .stats-grid { max-width: 1280px; margin: 0 auto 40px; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         .stat-card { background: var(--surface); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
         .stat-card h3 { font-size: 0.95em; font-weight: 600; color: var(--text-muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -296,6 +302,8 @@
                     <div class="form-group"><label>Date de vente</label><input type="date" id="dateVente"></div>
                 </div>
                 <div class="form-group"><label>Lien Vinted</label><input type="url" id="lienVinted"></div>
+                <!-- Champ Ordre caché -->
+                <input type="hidden" id="ordre">
                 <div class="form-boutons"><button type="button" class="btn-secondary" onclick="fermerFormulaire()">Annuler</button><button type="submit" class="btn-primary" id="btnSubmit">💾 Enregistrer</button></div>
             </form>
         </div>
@@ -361,7 +369,8 @@
                 const querySnapshot = await getDocs(collection(db, "creations"));
                 creations = [];
                 querySnapshot.forEach((doc) => {
-                    creations.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    creations.push({ id: doc.id, ...data, ordre: data.ordre || 9999 });
                 });
                 afficherCreations();
                 mettreAJourStats();
@@ -419,8 +428,10 @@
             const galerie = document.getElementById('galerie');
             const messageVide = document.getElementById('messageVide');
             const liste = getCreationsFiltrees();
-            const ordre = { 'en-vente': 1, 'en-cours': 2, 'vendu': 3 };
-            liste.sort((a, b) => ordre[a.statut] - ordre[b.statut]);
+            
+            // TRI PRINCIPAL : On trie d'abord par l'ordre personnalisé
+            liste.sort((a, b) => a.ordre - b.ordre);
+            
             galerie.innerHTML = '';
             if (liste.length === 0) {
                 messageVide.style.display = 'block';
@@ -481,26 +492,73 @@
         function afficherBiblio() {
             if (!isAdmin) return;
             const tbody = document.getElementById('biblioBody');
-            const liste = getCreationsFiltrees();
-            liste.sort((a, b) => {
-                let va = a[triBiblio.cle] ?? '';
-                let vb = b[triBiblio.cle] ?? '';
-                if (triBiblio.cle === 'prix') { va = parseFloat(va) || 0; vb = parseFloat(vb) || 0; }
-                if (va < vb) return -1 * triBiblio.sens;
-                if (va > vb) return 1 * triBiblio.sens;
-                return 0;
-            });
+            
+            // Tri par ordre croissant pour correspondre à la galerie
+            const liste = getCreationsFiltrees().sort((a, b) => a.ordre - b.ordre);
+            
             tbody.innerHTML = '';
-            liste.forEach(c => {
+            liste.forEach((c, index) => {
                 const tr = document.createElement('tr');
                 const photo = c.photos && c.photos.length > 0 ? c.photos[0] : null;
                 const img = photo ? `<img src="${photo}" class="biblio-thumb">` : `<div class="biblio-thumb">🌸</div>`;
                 const prix = c.prix ? `${parseFloat(c.prix).toFixed(2)} €` : '—';
                 const date = c.dateVente ? formaterDate(c.dateVente) : '—';
                 const likes = c.likes ? `❤️ ${c.likes}` : '—';
-                tr.innerHTML = `<td>${img}</td><td><strong>${c.nom}</strong></td><td>${c.statut}</td><td>${prix}</td><td>${likes}</td><td>${date}</td><td><div class="biblio-actions"><button onclick="ouvrirDetail('${c.id}')">👁️</button><button onclick="modifierCreation('${c.id}')">✏️</button><button onclick="supprimerCreation('${c.id}')">🗑️</button></div></td>`;
+                
+                // Flèches de tri (on empêche de monter le premier et de descendre le dernier)
+                const btnHaut = index > 0 ? `<button onclick="changerOrdre('${c.id}', ${c.ordre}, 'up')" title="Monter">⬆️</button>` : `<button style="opacity:0.3; cursor:default;" disabled>⬆️</button>`;
+                const btnBas = index < liste.length - 1 ? `<button onclick="changerOrdre('${c.id}', ${c.ordre}, 'down')" title="Descendre">⬇️</button>` : `<button style="opacity:0.3; cursor:default;" disabled>⬇️</button>`;
+
+                tr.innerHTML = `
+                    <td>${img}</td>
+                    <td><strong>${c.nom}</strong><br><small style="color:var(--text-muted)">Ordre : ${c.ordre}</small></td>
+                    <td>${c.statut}</td>
+                    <td>${prix}</td>
+                    <td>${likes}</td>
+                    <td>${date}</td>
+                    <td>
+                        <div class="biblio-actions">
+                            <div class="btn-sort">${btnHaut}${btnBas}</div>
+                            <button onclick="ouvrirDetail('${c.id}')">👁️</button>
+                            <button onclick="modifierCreation('${c.id}')">✏️</button>
+                            <button onclick="supprimerCreation('${c.id}')">🗑️</button>
+                        </div>
+                    </td>
+                `;
                 tbody.appendChild(tr);
             });
+        }
+
+        // Fonction pour échanger l'ordre de 2 éléments
+        async function changerOrdre(id, ordreActuel, direction) {
+            const index = creations.findIndex(c => c.id === id);
+            if (index === -1) return;
+            
+            // On trie d'abord la liste globale par ordre
+            const listeTriee = [...creations].sort((a, b) => a.ordre - b.ordre);
+            const indexTri = listeTriee.findIndex(c => c.id === id);
+            
+            let cibleIndex;
+            if (direction === 'up' && indexTri > 0) cibleIndex = indexTri - 1;
+            else if (direction === 'down' && indexTri < listeTriee.length - 1) cibleIndex = indexTri + 1;
+            else return;
+
+            const cible = listeTriee[cibleIndex];
+            
+            // On échange leurs numéros d'ordre
+            const ordreTemp = cible.ordre;
+            cible.ordre = ordreActuel;
+            
+            const creationActuelle = creations.find(c => c.id === id);
+            creationActuelle.ordre = ordreTemp;
+
+            // On sauvegarde les deux dans Firebase
+            const { db, doc, updateDoc } = window.FB;
+            await updateDoc(doc(db, "creations", id), { ordre: creationActuelle.ordre });
+            await updateDoc(doc(db, "creations", cible.id), { ordre: cible.ordre });
+
+            // On recharge
+            chargerCreations();
         }
 
         function trierBiblio(cle) {
@@ -545,10 +603,13 @@
                 document.getElementById('prix').value = creation.prix || '';
                 document.getElementById('dateVente').value = creation.dateVente || '';
                 document.getElementById('lienVinted').value = creation.lienVinted || '';
+                document.getElementById('ordre').value = creation.ordre || 9999;
                 if (creation.photos) photosActuelles = [...creation.photos];
             } else {
                 document.getElementById('titreModale').textContent = 'Nouvelle création';
                 document.getElementById('creationId').value = '';
+                // Nouvelle création : on la met à la fin (ordre 9999)
+                document.getElementById('ordre').value = 9999;
             }
             
             afficherApercuPhotos();
@@ -635,7 +696,8 @@
                 statut: document.getElementById('statut').value,
                 prix: document.getElementById('prix').value,
                 lienVinted: document.getElementById('lienVinted').value.trim(),
-                dateVente: document.getElementById('dateVente').value
+                dateVente: document.getElementById('dateVente').value,
+                ordre: parseInt(document.getElementById('ordre').value) || 9999
             };
             const { db, collection, addDoc, doc, updateDoc } = window.FB;
             if (id) { await updateDoc(doc(db, "creations", id), data); }
